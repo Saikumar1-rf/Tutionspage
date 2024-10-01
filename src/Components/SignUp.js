@@ -470,7 +470,7 @@ const SignUp = ({ setIsSubmitted }) => {
         
           <div className="w-1/3 pr-3 mt-2 mb-4">
             <label className="text-sm font-medium text-gray-700 float-start">
-              Mobile Number: 
+              Mobile Number:
             </label>
             <div className="flex float-start">
               <Select
@@ -533,7 +533,7 @@ const SignUp = ({ setIsSubmitted }) => {
                   setPersonInfo({ ...personInfo, phone: inputValue });
                   setFormData({ ...formData, phoneNumber: inputValue });
                 }}
-                className={`w-[285px] px-4 py-4 border border-gray-500 outline-none ${
+                className={`w-[300px] px-4 py-4 border border-gray-500 outline-none ${
                   selectedCountry && personInfo.phone
                     ? !validateStartDigits(personInfo.phone, selectedCountry)
                       ? "border-red-500"
