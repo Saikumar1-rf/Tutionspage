@@ -1,23 +1,28 @@
-import logo from './logo.svg';
-import './App.css';
+import { Routes, Route, BrowserRouter } from "react-router-dom";
+import Login from "./Components/Login";  // Correct path
+import ForgotPassword from "./Components/Forgotpassword";  // Remove src
+import Student from "./Components/Student";  // Remove src
+import SignUp from "./Components/SignUp";  // Correct path
+import Successfull from "./Components/Successfull";  // Remove src
+import React, { useState } from 'react'; 
+import "./App.css";
+
 
 function App() {
+const [isSubmitted, setIsSubmitted] = useState(false); // Initialize state here
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
+          <Route path="/student" element={<Student />} />
+          <Route path="/tutor" element={<SignUp setIsSubmitted={setIsSubmitted} />} />
+          <Route path="/success" element={<Successfull isSubmitted={isSubmitted} />} />
+        </Routes>
+      
     </div>
   );
 }
