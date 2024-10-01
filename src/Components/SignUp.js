@@ -255,7 +255,7 @@ const SignUp = ({ setIsSubmitted }) => {
 
     //email
     const emailRegex =
-      /^[a-zA-Z0-9._%+-]+@(gmail|yahoo|hotmail|outlook|icloud)\.(com|net|edu|org|gov|mil|in|co|us|info|io|biz)$/;
+      /^(?!\d)[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail|yahoo|outlook|hotmail|example|sai)\.(com|net|org|in|edu|gov|mil|us|info|org\.in)$/;
     if (!formData.email) {
       newErrors.email = "Email is required";
     } else if (!emailRegex.test(formData.email)) {
@@ -627,32 +627,29 @@ const SignUp = ({ setIsSubmitted }) => {
             )}
           </div>
           <div className="w-1/3 px-3">
-            <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
-              Highest Qualification:
-            </label>
-            <input
-              type="text"
-              name="qualification"
-              maxLength={20}
-              placeholder="Enter Your Highest Qualification"
-              value={formData.qualification}
-              onChange={(e) => {
-                const sanitizedValue = e.target.value.replace(
-                  /[^A-Za-z\s]/g,
-                  ""                  
-                );
-                setFormData({ ...formData, qualification: sanitizedValue });
-              }}
-              className={`w-full px-4 py-2 border border-gray-500 outline-none ${
-                errors.qualification ? "border-red-500" : ""
-              }`}
-            />
-            {errors.qualification && (
-              <span className="text-red-500 text-sm">
-                {errors.qualification}
-              </span>
-            )}
-          </div>
+  <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
+    Highest Qualification:
+  </label>
+  <input
+    type="text"
+    name="qualification"
+    maxLength={15}
+    placeholder="Enter Your Highest Qualification"
+    value={formData.qualification}
+    onChange={(e) => {
+      const newValue = e.target.value; // Allow any character
+      setFormData({ ...formData, qualification: newValue });
+    }}
+    className={`w-full px-4 py-2 border border-gray-500 outline-none ${
+      errors.qualification ? "border-red-500" : ""
+    }`}
+  />
+  {errors.qualification && (
+    <span className="text-red-500 text-sm">
+      {errors.qualification}
+    </span>
+  )}
+</div>
           <div className="w-1/3 pl-3">
             <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
               Subjects You Are Expert At:

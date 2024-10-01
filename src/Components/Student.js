@@ -358,7 +358,7 @@ const handleFocus = () => {
     }
 
     const emailRegex =
-      /^[a-zA-Z0-9._%+-]+@(gmail|yahoo|hotmail|outlook|icloud)\.(com|net|edu|org|gov|mil|in|co|us|info|io|biz)$/;
+      /^(?!\d)[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail|yahoo|outlook|hotmail|example|sai)\.(com|net|org|in|edu|gov|mil|us|info|org\.in)$/;
 
     if (!formData.email) {
       newErrors.email = "Email is required";
