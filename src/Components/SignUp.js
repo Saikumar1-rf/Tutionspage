@@ -344,7 +344,6 @@ const SignUp = ({ setIsSubmitted }) => {
   const handleNextClick = (e) => {
     e.preventDefault(); // Prevents the form's default behavior
     handleSubmit(e);
-    isSubmitting(true) // Call handleSubmit and pass the event object
   };
 
   const generateTimings = () => {
@@ -633,6 +632,7 @@ const SignUp = ({ setIsSubmitted }) => {
             <input
               type="text"
               name="qualification"
+              maxLength={20}
               placeholder="Enter Your Highest Qualification"
               value={formData.qualification}
               onChange={(e) => {
