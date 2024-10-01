@@ -46,8 +46,8 @@ const Forgotpass = () => {
       //  const emailRegex = /^[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@[a-zA-Z]+\.[a-zA-Z]{2,}(\.com)?$/;
       // const emailRegex=/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         //  const emailRegex=/^[a-z0-9]+(\.[a-z0-9]+)*@[a-z]{2,}(\.com||\.in)$/;/^[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail||yahoo||org||outlook||hotmail||example||sai)\.(com||net||org||in||edu||gov||mil||co||us||info||org\.in)$/;const emailRegex = /^(?!\d)[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail|yahoo|org|outlook|hotmail|example|sai)\.(com|net|org|in|edu|gov|mil|co\.in|us|info|org\.in)$/;
-const emailRegex=/^(?!\d)[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail||yahoo||org||outlook||hotmail||example||sai)\.(com|net|org|in||edu||gov||mil||us||info||org\.in)$/;
-  //  const emailRegex=/^[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail||yahoo||outlook||hotmail||example||sai)\.in$/;
+// const emailRegex=/^(?!\d)[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail||yahoo||org||outlook||hotmail||example||sai)\.(com|net|org|in||edu||gov||mil||us||info||org\.in)$/;
+   const emailRegex = /^(?!\d)[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail|yahoo|outlook|hotmail|example|sai)\.(com|net|org|in|edu|gov|mil|us|info|org\.in)$/;
       return emailRegex.test(email) && !/\s/.test(email); // Ensure no spaces are present
   };
 
