@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { countries } from "./countries";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
+
 const SignUp = ({ setIsSubmitted }) => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -199,7 +200,7 @@ const SignUp = ({ setIsSubmitted }) => {
     setFormData((prev) => ({ ...prev, [name]: newValue }));
   
     // Set validation errors
-    setErrors(validate());
+    // setErrors(validate());
   };
   
 
