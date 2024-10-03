@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 // import { phone } from "phone";
 import { countries } from "./countries";
 import Select from "react-select";
-
 const Student = () => {
   const [formData, setFormData] = useState({
     firstname: "",
@@ -53,8 +52,11 @@ const Student = () => {
         errorMessage = "Please enter a number between 1 and 12";
       }
     } else {
-      if (value.length > 20) {
-        errorMessage = "Studying Class can only have up to 20 characters";
+      const validInputPattern = /^[a-zA-Z0-9\s]*$/;
+    if (!validInputPattern.test(value)) {
+      errorMessage = "Special characters are not allowed.";
+    } else if(value.length > 30)  {
+        errorMessage = "Studying Class can only have up to 30 characters";
       }
     }
 
@@ -76,10 +78,10 @@ const Student = () => {
     const { name, value } = e.target;
     let errorMessage = "";
 
-    const validInputPattern = /^[a-zA-Z0-9\s]*$/;
+    const validInputPattern = /^[a-zA-Z0-9\s,]*$/;
 
     if (!validInputPattern.test(value)) {
-      errorMessage = "Special characters are not allowed.";
+      errorMessage = "Special characters are not allowed except for commas to separate subjects.";
     }
 
     setErrors((prevErrors) => ({
@@ -87,7 +89,7 @@ const Student = () => {
       subject: errorMessage,
     }));
 
-    if (!errorMessage && value.length <= 20) {
+    if (!errorMessage && value.length <= 50) {
       setFormData((prevData) => ({
         ...prevData,
         [name]: value,
@@ -138,7 +140,6 @@ const Student = () => {
     const formattedMinute = minute < 10 ? `0${minute}` : minute; // Add leading zero for minutes
     return `${formattedHour}:${formattedMinute} ${amPm}`; // Return in HH:mm AM/PM format
   };
-  
 // useEffect to set the generated timings on component mount
 useEffect(() => {
   const availableTimings = generateTimings();
@@ -187,6 +188,39 @@ useEffect(() => {
     }
   };
 
+  //Affordability per month
+  const handleAffordChange = (e) => {
+    const { name, value } = e.target;
+  
+    // Check if the input value is numeric
+    if (/^[0-9]*$/.test(value)) {
+      if (value === "0") {
+        // Set error for zero input
+        setErrors((prevState) => ({
+          ...prevState,
+          afford: "Zero is not allowed as a valid amount.",
+        }));
+      } else {
+        // If valid input, update the form data
+        setFormData((prevState) => ({
+          ...prevState,
+          [name]: value,
+        }));
+        // Clear any existing errors
+        setErrors((prevState) => ({
+          ...prevState,
+          afford: "",
+        }));
+      }
+    } else {
+      // Set error if input is not numeric
+      setErrors((prevState) => ({
+        ...prevState,
+        afford: "Only numeric values are allowed.",
+      }));
+    }
+  };
+  
   const handleKeyDown = (e) => {
     // Allow: backspace, delete, tab, escape, enter, and arrow keys
     if (
@@ -215,24 +249,6 @@ useEffect(() => {
     const [year, month, day] = value.split("-");
     let errorMsg = '';
 
-    if (name === "afford" && /^[0-9]*$/.test(value)) {
-      setFormData((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    }
-    if (name === "afford" && !/^[0-9]*$/.test(value)) {
-      setErrors((prevState) => ({
-        ...prevState,
-        afford: "Only numeric values are allowed.",
-      }));
-    } else {
-      setErrors((prevState) => ({
-        ...prevState,
-        afford: "",
-      }));
-    }
-
     if (year && (year.length !== 4 || parseInt(year) > CurrentYear)) {
       errorMsg =
         "Year should be 4 digits and not greater than the current year.";
@@ -244,10 +260,9 @@ useEffect(() => {
 
     // Validate day based on the number of days in the month and year
     const maxDays = getDaysInMonth(month, year);
-if (day && (parseInt(day) < 1 || parseInt(day) > maxDays)) {
-  errorMsg = `Day should be between 1 and ${maxDays} for the selected month and year.`; // Enclosed in backticks
-}
-
+    if (day && (parseInt(day) < 1 || parseInt(day) > maxDays)) {
+      errorMsg = `Day should be between 1 and ${maxDays} for the selected month and year.`;
+    }
 
     if (name === "email") {
       newValue = value.replace(/\s+/g, "").toLowerCase();
@@ -265,60 +280,60 @@ if (day && (parseInt(day) < 1 || parseInt(day) > maxDays)) {
       [name]: newValue,
     });
   };
-// Function to detect the user's location using the Geolocation API
-const detectLocation = () => {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
 
-        // Use reverse geocoding to get the city, state, area, and country
-        fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            const { suburb, city, state, country } = data.address;
-            const exactLocation = `${suburb}, ${city}, ${state}, ${country}`;
+  // Function to detect the user's location using the Geolocation API
+  const detectLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
 
-            // Set the location as "Area, City, State, Country"
-            setFormData((prevFormData) => ({
-              ...prevFormData,
-              location: exactLocation,
-            }));
-            setIsLocationDetected(true);
-          })
-          .catch((error) => {
-            console.error("Error with reverse geocoding:", error);
-            setErrors((prevErrors) => ({
-              ...prevErrors,
-              location: "Unable to retrieve location details",
-            }));
-          });
-      },
-      (error) => {
-        console.error("Error detecting location:", error);
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          location: "Unable to detect location",
-        }));
-      }
-    );
-  } else {
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      location: "Geolocation is not supported by this browser",
-    }));
-  }
-};
+          // Use reverse geocoding to get the city, state, area, and country
+          fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              const { suburb, city, state, country } = data.address;
+              const exactLocation = `${suburb}, ${city}, ${state}, ${country}`;
 
-// Handle the onFocus event to detect location when the input is focused
-const handleFocus = () => {
-  if (!isLocationDetected) {
-    detectLocation();
-  }
-};
+              // Set the location as "Area, City, State, Country"
+              setFormData((prevFormData) => ({
+                ...prevFormData,
+                location: exactLocation,
+              }));
+              setIsLocationDetected(true);
+            })
+            .catch((error) =>
+              setErrors((prevErrors) => ({
+                ...prevErrors,
+                location: "Unable to retrieve location",
+              }))
+            );
+        },
+        (error) => {
+          console.error("Error detecting location:", error);
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            location: "Unable to detect location",
+          }));
+        }
+      );
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        location: "Geolocation is not supported by this browser",
+      }));
+    }
+  };
+
+  // Handle the onFocus event to detect location when the input is focused
+  const handleFocus = () => {
+    if (!isLocationDetected) {
+      detectLocation();
+    }
+  };
 
   //validate first Name
   const handleNameChar = (e) => {
@@ -357,8 +372,9 @@ const handleFocus = () => {
       newErrors.lastname = "Last Name must be at least 3 characters";
     }
 
-    const emailRegex =
-      /^(?!\d)[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail|yahoo|outlook|hotmail|example|sai)\.(com|net|org|in|edu|gov|mil|us|info|org\.in)$/;
+    // const emailRegex =
+      // /^[a-zA-Z0-9._%+-]+@(gmail|yahoo|hotmail|outlook|icloud)\.(com|net|edu|org|gov|mil|in|co|us|info|io|biz)$/;
+    const emailRegex =/^(?!\d)[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail|yahoo|outlook|hotmail|example|sai)\.(com|net|org|in|edu|gov|mil|us|info|org\.in)$/;
 
     if (!formData.email) {
       newErrors.email = "Email is required";
@@ -377,7 +393,7 @@ const handleFocus = () => {
     //board
     if (!formData.board.trim()) {
       newErrors.board = "Board is required";
-    } else if (formData.board.length < 3) {
+    } else if (formData.board.length < 2) {
       newErrors.board = "Board Name must be at least 3 characters";
     }
 
@@ -617,7 +633,7 @@ const handleFocus = () => {
               // max={new Date().toISOString().split("T")[0]}
               max={
                 new Date(
-                  new Date().setFullYear(new Date().getFullYear() - 4) - 1
+                  new Date().setFullYear(new Date().getFullYear() -4) - 1
                 )
                   .toISOString()
                   .split("T")[0]
@@ -719,6 +735,7 @@ const handleFocus = () => {
               name="board"
               value={formData.board}
               onChange={handleChange}
+              minLength={2}
               maxLength={30}
               onKeyDown={handleNameChar}
               placeholder="Enter your Board"
@@ -765,7 +782,7 @@ const handleFocus = () => {
               name="subject"
               placeholder="Enter Subject you are Looking for"
               value={formData.subject}
-              maxLength={20}
+              maxLength={50}
               onChange={handleSubjectChange}
               // onKeyDown={handleNameChar}
               className={`w-[300px] py-2 px-2 border border-gray-500 outline-none  ${
@@ -809,7 +826,7 @@ const handleFocus = () => {
               name="afford"
               placeholder="Your affordability per month"
               value={formData.afford}
-              onChange={handleChange}
+              onChange={handleAffordChange}
               onKeyDown={handleKeyDown}
               maxLength={7}
               className={`w-[300px] py-2 px-2 border border-gray-500 outline-none  ${
@@ -820,6 +837,8 @@ const handleFocus = () => {
               <span className="text-red-500 text-sm">{errors.afford}</span>
             )}
           </div>
+
+          
             {/* timing slots */}
           <div className="my-3">
             <label className="float-start text-sm font-medium text-gray-700">
@@ -844,16 +863,33 @@ const handleFocus = () => {
           </div>
         </div>
         <div>
+          <div>
+            <label className="float-start text-sm font-medium text-gray-700">Category</label>
+            <input
+              type="text"
+              name="category"
+              placeholder="Text Here...."
+              value={formData.category}
+              onChange={handleChange}
+              maxLength={30}
+              className={`w-[300px]  mr-[1000px] py-2 px-2 border border-gray-500 outline-none  ${
+                errors.category ? "border-red-500" : ""
+              }`}
+            />
+            
+          </div>
+          <div className="flex justify-end">
           <button
             type="submit"
-            className="mt-4 bg-blue-500 text-white py-2 px-4 ml-[450px] font-semibold  hover:bg-blue-400"
+            className=" bg-blue-500 mt-10 text-white py-2 px-4 rounded-md  font-semibold  hover:bg-blue-400"
           >
             Next
           </button>
+          </div>
         </div>
       </form>
     </div>
   );
 };
 
-export default Student;
+export default Student;

@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { countries } from "./countries";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
-
+import axios from "axios";
 const SignUp = ({ setIsSubmitted }) => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -21,7 +21,9 @@ const SignUp = ({ setIsSubmitted }) => {
     file: null,
     chargesPerHour: "",
     availableTimings: "",
+    category: "",
   });
+
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCountryCode, setSelectedCountryCode] = useState(""); // State for selected country code
@@ -71,8 +73,8 @@ const SignUp = ({ setIsSubmitted }) => {
           )
             .then((response) => response.json())
             .then((data) => {
-              const { suburb, city, state, country } = data.address; // suburb = area/neighborhood
-              const exactLocation = `${suburb}, ${city}, ${state}, ${country}`;
+              const { suburb, city, state, country, postcode } = data.address; // suburb = area/neighborhood
+              const exactLocation = `${suburb}, ${city}, ${state}, ${country}, ${postcode}`;
 
               // Set the location as "Area, City, State, Country"
               setFormData((prevFormData) => ({
@@ -114,7 +116,7 @@ const SignUp = ({ setIsSubmitted }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     let newValue = value.trimStart();
-  
+
     // Validation logic
     if (name === "afford") {
       if (/^[0-9]*$/.test(value)) {
@@ -133,11 +135,11 @@ const SignUp = ({ setIsSubmitted }) => {
         }));
       }
     }
-  
+
     if (name === "passportNumber") {
       const regex = /^[A-Z][0-9]{7}$/; // Regex for the valid passport number format
       const maxLength = 8;
-  
+
       if (!value) {
         setErrors((prevErrors) => ({
           ...prevErrors,
@@ -157,15 +159,15 @@ const SignUp = ({ setIsSubmitted }) => {
       } else {
         setErrors((prevErrors) => ({
           ...prevErrors,
-          passportNumber: "", // Clear any errors
+          passportNumber: "",
         }));
       }
     }
-  
+
     if (name === "email") {
       newValue = value.replace(/\s+/g, "").toLowerCase();
     }
-  
+
     if (name === "chargesPerHour") {
       // Prevent input if more than 7 digits (allow decimal)
       if (newValue.length > 7) {
@@ -176,7 +178,7 @@ const SignUp = ({ setIsSubmitted }) => {
         return; // Prevent any non-numeric input
       }
     }
-  
+
     // Validation logic for firstName and lastName
     if (name === "firstName" || name === "lastName") {
       const regex = /^[A-Za-z][A-Za-z\s]*$/; // Allow alphabets and spaces, must start with a letter
@@ -184,33 +186,32 @@ const SignUp = ({ setIsSubmitted }) => {
         return; // Ignore input if it contains non-alphabetic characters
       }
     }
-  
+
     if (name === "subject") {
       setCharCount(value.length);
     }
-  
+
     if (name === "aadhaarNumber" && formData.govtIdProof === "Aadhaar Card") {
       // Check if the value is numeric and does not exceed 12 digits
       if (!/^\d*$/.test(value) || value.length > 12) {
         return; // Prevent any non-numeric input
       }
     }
-  
+
     // Update the form data
     setFormData((prev) => ({ ...prev, [name]: newValue }));
-  
-    // Set validation errors
+
+    // // Set validation errors
     // setErrors(validate());
   };
-  
 
   const handleNameChar = (e) => {
     const key = e.key;
     const value = e.target.value;
-  
+
     const nameRegex = /^[A-Za-z\s]*$/; // Allow letters and spaces
     let newError = {};
-  
+
     // Prevent empty input or spaces at the beginning
     if ((value === "" && key === " ") || !nameRegex.test(key)) {
       e.preventDefault(); // Prevent spaces if the value is empty
@@ -219,7 +220,7 @@ const SignUp = ({ setIsSubmitted }) => {
     } else if (!/^[A-Za-z]/.test(value) && key !== " ") {
       newError.firstName = "Must start with a Character"; // Adjust error message as needed
     }
-  }
+  };
 
   const handleInput = (e) => {
     const { name, value } = e.target;
@@ -242,16 +243,16 @@ const SignUp = ({ setIsSubmitted }) => {
     //first name
     if (!formData.firstName || !formData.firstName.trim()) {
       newErrors.firstName = "First Name is required";
-  } else if (formData.firstName.trim().length < 3) {
+    } else if (formData.firstName.trim().length < 3) {
       newErrors.firstName = "First Name must be at least 3 characters";
-  }
+    }
 
-  // Last Name
-  if (!formData.lastName || !formData.lastName.trim()) {
+    // Last Name
+    if (!formData.lastName || !formData.lastName.trim()) {
       newErrors.lastName = "Last Name is required";
-  } else if (formData.lastName.trim().length < 3) {
+    } else if (formData.lastName.trim().length < 3) {
       newErrors.lastName = "Last Name must be at least 3 characters";
-  }
+    }
 
     //email
     const emailRegex =
@@ -285,12 +286,14 @@ const SignUp = ({ setIsSubmitted }) => {
     if (!formData.govtIdProof)
       newErrors.govtIdProof = "Government ID Proof is required";
     // Validate Highest Qualification
-    const qualificationRegex = /^[A-Za-z\s]+$/; // Allow only letters and spaces
+    const qualificationRegex =
+      /^[A-Za-z0-9\s!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/;
+
     if (!formData.qualification.trim()) {
       newErrors.qualification = "Highest qualification is required";
     } else if (!qualificationRegex.test(formData.qualification)) {
       newErrors.qualification =
-        "Invalid qualification format. Only letters and spaces are allowed.";
+        "Invalid qualification format. Only letters, numbers, and special characters are allowed.";
     }
 
     // Charges Per Hour validation
@@ -326,17 +329,91 @@ const SignUp = ({ setIsSubmitted }) => {
     if (!formData.availableTimings) {
       newErrors.availableTimings = "Available timing is required";
     }
+    if (!formData.category) {
+      newErrors.category = "Category is required";
+    }
 
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+
+  //   const postRequest=()=> {
+  //     try{
+  //       const response=axios.post()
+  //       const data=response.data
+  //       console.log(data)
+  //     }catch(err){
+  //       console.log(err)
+  //     }
+
+  //     setFormData
+
+  //   }
+
+  //   const newErrors = validate();
+  //   if (Object.keys(newErrors).length === 0) {
+  //     console.log("Form submitted successfully", formData);
+  //     setIsSubmitted(true);
+  //     navigate("/success");
+  //   } else {
+  //     setErrors(newErrors);
+  //   }
+  // };
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     const newErrors = validate();
     if (Object.keys(newErrors).length === 0) {
-      console.log("Form submitted successfully", formData);
-      setIsSubmitted(true);
-      navigate("/success");
+      try {
+        // Create FormData to handle file and other data
+        const formDataToSend = new FormData();
+        formDataToSend.append("firstName", formData.firstName);
+        formDataToSend.append("lastName", formData.lastName);
+        formDataToSend.append("emailId", formData.emailId);
+        formDataToSend.append("phoneNumber", formData.phoneNumber);
+        formDataToSend.append("location", formData.location);
+        formDataToSend.append("gender", formData.gender);
+        formDataToSend.append("dob", formData.dob);
+        formDataToSend.append(
+          "highestQualification",
+          formData.highestQualification
+        );
+        formDataToSend.append(
+          "subjectsYouAreExpertAt",
+          formData.subjectsYouAreExpertAt
+        );
+        formDataToSend.append("modeOfTeaching", formData.modeOfTeaching);
+        formDataToSend.append("govtIdProof", formData.govtIdProof);
+        formDataToSend.append("aadhaarNumber", formData.aadhaarNumber);
+        formDataToSend.append("passportNumber", formData.passportNumber);
+        formDataToSend.append("chargesPerHour", formData.chargesPerHour);
+        formDataToSend.append("category", formData.category);
+        formDataToSend.append("availableTimings", formData.availableTimings);
+        formDataToSend.append("file", formData.file); // Add the file
+
+        // Axios POST request
+        const response = await axios.post(
+          "https://your-api-endpoint.com/api/signup",
+          formDataToSend,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        // Handle response
+        console.log("Form submitted successfully", response.data);
+
+        // If successful, set the submission state and navigate to success page
+        setIsSubmitted(true);
+        navigate("/success");
+      } catch (error) {
+        // Handle error
+        console.error("Error submitting form", error);
+      }
     } else {
       setErrors(newErrors);
     }
@@ -389,18 +466,19 @@ const SignUp = ({ setIsSubmitted }) => {
   };
 
   // Usage in the component
-  const availableTimings = generateTimings();
+  const availableTimings = useMemo(() => generateTimings(), []);
+
   console.log(availableTimings);
 
   return (
-    <div className="max-w-10xl sm-640px mx-auto mt-10 p-10 bg-white border border-gray-300 rounded-lg shadow-lg">
+    <div className="max-w-3xl sm-640px mx-auto mt-10 p-10 bg-white border border-gray-300 rounded-lg shadow-lg">
       <h2 className="text-3xl font-bold text-center text-blue-600 mb-8">
         Sign Up as a Tutor
       </h2>
-      <form  onSubmit={handleSubmit}>
-        {/* Row 1: First Name, Last Name, Email */}
+      <form onSubmit={handleSubmit}>
+        {/* Row 1: First Name and Last Name */}
         <div className="flex mb-3">
-          <div className="w-1/3 pr-3">
+          <div className="w-1/2 pr-3">
             <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
               First Name:
             </label>
@@ -422,7 +500,7 @@ const SignUp = ({ setIsSubmitted }) => {
               <span className="text-red-500 text-sm">{errors.firstName}</span>
             )}
           </div>
-          <div className="w-1/3 px-3">
+          <div className="w-1/2 pl-3">
             <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
               Last Name:
             </label>
@@ -444,14 +522,18 @@ const SignUp = ({ setIsSubmitted }) => {
               <span className="text-red-500 text-sm">{errors.lastName}</span>
             )}
           </div>
-          <div className="w-1/3 pl-3">
+        </div>
+
+        {/* Row 2: Email and Mobile Number */}
+        <div className="flex mb-3">
+          <div className="w-full pr-3">
             <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
               Email:
             </label>
             <input
               type="email"
               name="email"
-              placeholder="Enter your Email Id"
+              placeholder="Enter your Email"
               maxLength={30}
               value={formData.email}
               onChange={handleChange}
@@ -464,12 +546,7 @@ const SignUp = ({ setIsSubmitted }) => {
               <span className="text-red-500 text-sm">{errors.email}</span>
             )}
           </div>
-        </div>
-
-        {/* Row 2: Mobile Number, Location, Gender */}
-        <div className="flex">
-        
-          <div className="w-1/3 pr-3 mt-2 mb-4">
+          <div className="w-full pl-3 mt-2 mb-4">
             <label className="text-sm font-medium text-gray-700 float-start">
               Mobile Number:
             </label>
@@ -509,7 +586,7 @@ const SignUp = ({ setIsSubmitted }) => {
                 className="w-1/4 border border-gray-500 rounded-l-md outline-none"
               />
 
-              <input              
+              <input
                 maxLength={10}
                 type="tel"
                 name="phoneNumber"
@@ -517,7 +594,7 @@ const SignUp = ({ setIsSubmitted }) => {
                 value={personInfo.phone || ""}
                 disabled={!selectedCountry}
                 onChange={(e) => {
-                  const inputValue = e.target.value.replace(/[^0-9]/g, ""); // Allow only numbers
+                  const inputValue = e.target.value.replace(/[^0-9]/g, "");
                   setPersonInfo({ ...personInfo, phone: inputValue });
                   setFormData({ ...formData, phoneNumber: inputValue });
                 }}
@@ -534,7 +611,7 @@ const SignUp = ({ setIsSubmitted }) => {
                   setPersonInfo({ ...personInfo, phone: inputValue });
                   setFormData({ ...formData, phoneNumber: inputValue });
                 }}
-                className={`w-full px-4 py-4 border border-gray-500 ${
+                className={`w-full px-4 py-2 border border-gray-500 ${
                   selectedCountry && personInfo.phone
                     ? !validateStartDigits(personInfo.phone, selectedCountry)
                       ? "border-red-500"
@@ -550,9 +627,11 @@ const SignUp = ({ setIsSubmitted }) => {
               <span className="text-red-500 text-sm">{errors.phoneNumber}</span>
             )}
           </div>
-        
+        </div>
 
-          <div className="w-1/3 px-3">
+        {/* Row 3: Location and Gender */}
+        <div className="flex mb-3">
+          <div className="w-1/2 pr-3">
             <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
               Location:
             </label>
@@ -572,7 +651,7 @@ const SignUp = ({ setIsSubmitted }) => {
               <span className="text-red-500 text-sm">{errors.location}</span>
             )}
           </div>
-          <div className="w-1/3 pl-3">
+          <div className="w-1/2 pl-3">
             <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
               Gender:
             </label>
@@ -594,9 +673,9 @@ const SignUp = ({ setIsSubmitted }) => {
           </div>
         </div>
 
-        {/* Row 3: Date of Birth, Highest Qualification, Subjects You Are Expert At */}
+        {/* Row 4: Date of Birth and Highest Qualification */}
         <div className="flex mb-3">
-          <div className="w-1/3 pr-3">
+          <div className="w-1/2 pr-3">
             <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
               Date of Birth:
             </label>
@@ -611,12 +690,12 @@ const SignUp = ({ setIsSubmitted }) => {
                 )
                   .toISOString()
                   .split("T")[0]
-              } // Restrict to exactly 2 years ago
+              } 
               min={
                 new Date(new Date().setFullYear(new Date().getFullYear() - 100))
                   .toISOString()
                   .split("T")[0]
-              } // Disable dates more than 100 years ago
+              } 
               className={`w-full px-4 py-2 border border-gray-500 outline-none  ${
                 errors.dob ? "border-red-500" : ""
               }`}
@@ -626,31 +705,35 @@ const SignUp = ({ setIsSubmitted }) => {
               <span className="text-red-500 text-sm">{errors.dob}</span>
             )}
           </div>
-          <div className="w-1/3 px-3">
-  <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
-    Highest Qualification:
-  </label>
-  <input
-    type="text"
-    name="qualification"
-    maxLength={15}
-    placeholder="Enter Your Highest Qualification"
-    value={formData.qualification}
-    onChange={(e) => {
-      const newValue = e.target.value; // Allow any character
-      setFormData({ ...formData, qualification: newValue });
-    }}
-    className={`w-full px-4 py-2 border border-gray-500 outline-none ${
-      errors.qualification ? "border-red-500" : ""
-    }`}
-  />
-  {errors.qualification && (
-    <span className="text-red-500 text-sm">
-      {errors.qualification}
-    </span>
-  )}
-</div>
-          <div className="w-1/3 pl-3">
+          <div className="w-1/2 pl-3">
+            <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
+              Highest Qualification:
+            </label>
+            <input
+              type="text"
+              name="qualification"
+              maxLength={15}
+              placeholder="Enter Your Highest Qualification"
+              value={formData.qualification}
+              onChange={(e) => {
+                const newValue = e.target.value; 
+                setFormData({ ...formData, qualification: newValue });
+              }}
+              className={`w-full px-4 py-2 border border-gray-500 outline-none ${
+                errors.qualification ? "border-red-500" : ""
+              }`}
+            />
+            {errors.qualification && (
+              <span className="text-red-500 text-sm">
+                {errors.qualification}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Row 5: Subjects and Mode of Teaching */}
+        <div className="flex mb-3">
+          <div className="w-1/2 pr-3">
             <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
               Subjects You Are Expert At:
             </label>
@@ -667,11 +750,7 @@ const SignUp = ({ setIsSubmitted }) => {
               <span className="text-red-500 text-sm">{errors.subject}</span>
             )}
           </div>
-        </div>
-
-        {/* Row 4: Mode of Teaching, Charges per Hour, Available Timings */}
-        <div className="flex mb-3">
-          <div className="w-1/3 pr-3">
+          <div className="w-1/2 pl-3">
             <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
               Mode of Teaching:
             </label>
@@ -694,7 +773,11 @@ const SignUp = ({ setIsSubmitted }) => {
               </span>
             )}
           </div>
-          <div className="w-1/3 px-3">
+        </div>
+
+        {/* Row 6: Charges Per Hour and Available Time Slots */}
+        <div className="flex mb-3">
+          <div className="w-1/2 pr-3">
             <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
               Charges Per Hour:
             </label>
@@ -715,7 +798,7 @@ const SignUp = ({ setIsSubmitted }) => {
               </span>
             )}
           </div>
-          <div className="w-1/3 pl-3">
+          <div className="w-1/2 pl-3">
             <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
               Available Time Slots:
             </label>
@@ -740,9 +823,28 @@ const SignUp = ({ setIsSubmitted }) => {
           </div>
         </div>
 
-        {/* Row 5: Government ID Proof and Number, File Upload */}
-        <div className="flex mb-6">
-          <div className="w-1/3 pr-3">
+        {/* Row 7: Category and Government ID Proof */}
+        <div className="flex mb-3">
+          <div className="w-1/2 pr-3">
+            <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
+              Category:
+            </label>
+            <input
+              type="text"
+              name="category"
+              maxLength={30}
+              placeholder="Enter the category"
+              value={formData.category}
+              onChange={handleChange}
+              className={`w-full px-4 py-2 border border-gray-500 outline-none ${
+                errors.category ? "border-red-500" : ""
+              }`}
+            />
+            {errors.category && (
+              <span className="text-red-500 text-sm">{errors.category}</span>
+            )}
+          </div>
+          <div className="w-1/2 pl-3">
             <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
               Government ID Proof:
             </label>
@@ -762,11 +864,13 @@ const SignUp = ({ setIsSubmitted }) => {
               <span className="text-red-500 text-sm">{errors.govtIdProof}</span>
             )}
           </div>
+        </div>
 
-          {/* Conditional Rendering based on selected Government ID Proof */}
+        {/* Row 8: Aadhaar/Passport Number and Document Upload */}
+        <div className="flex mb-3">
           {formData.govtIdProof && (
             <>
-              <div className="w-1/3 px-3">
+              <div className="w-1/2 pr-3">
                 <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
                   {formData.govtIdProof === "Aadhaar Card"
                     ? "Aadhaar Number:"
@@ -785,7 +889,7 @@ const SignUp = ({ setIsSubmitted }) => {
                       : formData.passportNumber
                   }
                   onChange={handleChange}
-                  maxLength={formData.govtIdProof === "Aadhaar Card" ? 12 : 8} // Set max length for passport to 8
+                  maxLength={formData.govtIdProof === "Aadhaar Card" ? 12 : 8} 
                   className={`w-full px-4 py-2 border border-gray-500 outline-none ${
                     formData.govtIdProof === "Aadhaar Card" &&
                     errors.aadhaarNumber
@@ -811,7 +915,8 @@ const SignUp = ({ setIsSubmitted }) => {
                   )}
               </div>
 
-              <div className="w-1/3 pl-3">
+              <div className="w-1/2 pl-3">
+                {/* Document Upload */}
                 <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
                   Upload{" "}
                   {formData.govtIdProof === "Aadhaar Card"
@@ -822,7 +927,7 @@ const SignUp = ({ setIsSubmitted }) => {
                   type="file"
                   name="file"
                   onChange={handleFileChange}
-                  className={`w-full px-1 py-2 border border-gray-500 outline-none ${
+                  className={`w-full px-4 py-2 border border-gray-500 outline-none ${
                     errors.file ? "border-red-500" : ""
                   }`}
                 />
