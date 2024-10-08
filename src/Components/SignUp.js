@@ -7,18 +7,19 @@ const SignUp = ({ setIsSubmitted }) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    email: "",
+    emailId: "",
+    countryCode:"",
     phoneNumber: "",
     location: "",
     gender: "",
     dob: "",
-    qualification: "",
-    subject: "",
+    highestQualification: "",
+    subjectsYouAreExpertAt: "",
     modeOfTeaching: "",
-    govtIdProof: "",
-    aadhaarNumber: "",
+    nationalIdType: "",
+    nationalIdNum: "",
     passportNumber: "",
-    file: null,
+    // file: null,
     chargesPerHour: "",
     availableTimings: "",
     category: "",
@@ -43,14 +44,14 @@ const SignUp = ({ setIsSubmitted }) => {
 
   const countryOptions = countries.map((country) => ({
     value: country.code,
-    label: `(+${country.phone}) ${country.label}`,
+    label: `(+${country.phone})`,
     country,
   }));
   //******/
 
   const [errors, setErrors] = useState({
-    govtIdProof: "",
-    aadhaarNumber: "",
+    nationalIdType: "",
+    nationalIdNum: "",
     passportNumber: "",
     file: "",
   });
@@ -113,6 +114,8 @@ const SignUp = ({ setIsSubmitted }) => {
     }
   };
   //******/
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     let newValue = value.trimStart();
@@ -137,7 +140,7 @@ const SignUp = ({ setIsSubmitted }) => {
     }
 
     if (name === "passportNumber") {
-      const regex = /^[A-Z][0-9]{7}$/; // Regex for the valid passport number format
+      const regex = /^[A-Z][0-9]{7}$/; 
       const maxLength = 8;
 
       if (!value) {
@@ -164,7 +167,7 @@ const SignUp = ({ setIsSubmitted }) => {
       }
     }
 
-    if (name === "email") {
+    if (name === "emailId") {
       newValue = value.replace(/\s+/g, "").toLowerCase();
     }
 
@@ -191,7 +194,7 @@ const SignUp = ({ setIsSubmitted }) => {
       setCharCount(value.length);
     }
 
-    if (name === "aadhaarNumber" && formData.govtIdProof === "Aadhaar Card") {
+    if (name === "nationalIdNum" && formData.nationalIdType === "Aadhaar Card") {
       // Check if the value is numeric and does not exceed 12 digits
       if (!/^\d*$/.test(value) || value.length > 12) {
         return; // Prevent any non-numeric input
@@ -201,8 +204,6 @@ const SignUp = ({ setIsSubmitted }) => {
     // Update the form data
     setFormData((prev) => ({ ...prev, [name]: newValue }));
 
-    // // Set validation errors
-    // setErrors(validate());
   };
 
   const handleNameChar = (e) => {
@@ -224,7 +225,7 @@ const SignUp = ({ setIsSubmitted }) => {
 
   const handleInput = (e) => {
     const { name, value } = e.target;
-    if (name === "email") {
+    if (name === "emailId") {
       e.target.value = value.replace(/\s+/g, "");
     }
   };
@@ -257,10 +258,10 @@ const SignUp = ({ setIsSubmitted }) => {
     //email
     const emailRegex =
       /^(?!\d)[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail|yahoo|outlook|hotmail|example|sai)\.(com|net|org|in|edu|gov|mil|us|info|org\.in)$/;
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = "Invalid email format";
+    if (!formData.emailId) {
+      newErrors.emailId = "Email is required";
+    } else if (!emailRegex.test(formData.emailId)) {
+      newErrors.emailId = "Invalid email format";
     }
     //mobile
     if (!formData.phoneNumber)
@@ -273,7 +274,7 @@ const SignUp = ({ setIsSubmitted }) => {
     //DOB
     if (!formData.dob) newErrors.dob = "Date of Birth is required";
     //sub are req
-    if (!formData.subject.trim()) newErrors.subject = "Subject is required";
+    if (!formData.subjectsYouAreExpertAt.trim()) newErrors.subjectsYouAreExpertAt = "Subject is required";
     //Mode of teaching
     if (!formData.modeOfTeaching)
       newErrors.modeOfTeaching = "Mode of teaching is required";
@@ -283,16 +284,16 @@ const SignUp = ({ setIsSubmitted }) => {
     else if (isNaN(formData.chargesPerHour) || formData.chargesPerHour <= 0)
       newErrors.chargesPerHour = "Charges must be a positive number";
 
-    if (!formData.govtIdProof)
-      newErrors.govtIdProof = "Government ID Proof is required";
+    if (!formData.nationalIdType)
+      newErrors.nationalIdType = "Government ID Proof is required";
     // Validate Highest Qualification
     const qualificationRegex =
       /^[A-Za-z0-9\s!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/;
 
-    if (!formData.qualification.trim()) {
-      newErrors.qualification = "Highest qualification is required";
-    } else if (!qualificationRegex.test(formData.qualification)) {
-      newErrors.qualification =
+    if (!formData.highestQualification.trim()) {
+      newErrors.highestQualification = "Highest qualification is required";
+    } else if (!qualificationRegex.test(formData.highestQualification)) {
+      newErrors.highestQualification =
         "Invalid qualification format. Only letters, numbers, and special characters are allowed.";
     }
 
@@ -306,19 +307,19 @@ const SignUp = ({ setIsSubmitted }) => {
     }
 
     // Aadhaar Card validation
-    if (formData.govtIdProof === "Aadhaar Card") {
+    if (formData.nationalIdType === "Aadhaar Card") {
       const aadhaarRegex = /^\d{12}$/; // Aadhaar should be exactly 12 digits
-      if (!formData.aadhaarNumber.trim()) {
-        newErrors.aadhaarNumber = "Aadhaar number is required";
-      } else if (!aadhaarRegex.test(formData.aadhaarNumber.trim())) {
-        newErrors.aadhaarNumber =
+      if (!formData.nationalIdNum.trim()) {
+        newErrors.nationalIdNum = "Aadhaar number is required";
+      } else if (!aadhaarRegex.test(formData.nationalIdNum.trim())) {
+        newErrors.nationalIdNum =
           "Invalid Aadhaar number format. It must be 12 digits.";
       }
     }
 
     // Passport validation
 
-    if (formData.govtIdProof === "Passport Number") {
+    if (formData.nationalIdType === "Passport Number") {
       if (!formData.passportNumber)
         newErrors.passportNumber = "Passport Number is required";
       // Add any specific validation logic for passport number here if needed
@@ -336,31 +337,7 @@ const SignUp = ({ setIsSubmitted }) => {
     return newErrors;
   };
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
 
-  //   const postRequest=()=> {
-  //     try{
-  //       const response=axios.post()
-  //       const data=response.data
-  //       console.log(data)
-  //     }catch(err){
-  //       console.log(err)
-  //     }
-
-  //     setFormData
-
-  //   }
-
-  //   const newErrors = validate();
-  //   if (Object.keys(newErrors).length === 0) {
-  //     console.log("Form submitted successfully", formData);
-  //     setIsSubmitted(true);
-  //     navigate("/success");
-  //   } else {
-  //     setErrors(newErrors);
-  //   }
-  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -372,6 +349,7 @@ const SignUp = ({ setIsSubmitted }) => {
         formDataToSend.append("firstName", formData.firstName);
         formDataToSend.append("lastName", formData.lastName);
         formDataToSend.append("emailId", formData.emailId);
+        formDataToSend.append("countryCode", formData.countryCode);
         formDataToSend.append("phoneNumber", formData.phoneNumber);
         formDataToSend.append("location", formData.location);
         formDataToSend.append("gender", formData.gender);
@@ -385,22 +363,24 @@ const SignUp = ({ setIsSubmitted }) => {
           formData.subjectsYouAreExpertAt
         );
         formDataToSend.append("modeOfTeaching", formData.modeOfTeaching);
-        formDataToSend.append("govtIdProof", formData.govtIdProof);
-        formDataToSend.append("aadhaarNumber", formData.aadhaarNumber);
+        formDataToSend.append("nationalIdType", formData.nationalIdType);
+        formDataToSend.append("nationalIdNum", formData.nationalIdNum);
         formDataToSend.append("passportNumber", formData.passportNumber);
         formDataToSend.append("chargesPerHour", formData.chargesPerHour);
         formDataToSend.append("category", formData.category);
         formDataToSend.append("availableTimings", formData.availableTimings);
-        formDataToSend.append("file", formData.file); // Add the file
-
+        // formDataToSend.append("file", formData.file); // Add the file
+        console.log("form submit", formDataToSend);
         // Axios POST request
         const response = await axios.post(
-          "https://your-api-endpoint.com/api/signup",
+          "http://192.168.0.109:8080/tution-application/tutor/create",
           formDataToSend,
           {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+            
+              headers: {
+                "Content-Type": "application/json", // Send as JSON
+              },
+            
           }
         );
 
@@ -531,19 +511,19 @@ const SignUp = ({ setIsSubmitted }) => {
               Email:
             </label>
             <input
-              type="email"
-              name="email"
+              type="emailId"
+              name="emailId"
               placeholder="Enter your Email"
               maxLength={30}
-              value={formData.email}
+              value={formData.emailId}
               onChange={handleChange}
               onInput={handleInput}
               className={`w-full px-4 py-2 border border-gray-500 outline-none ${
-                errors.email ? "border-red-500" : ""
+                errors.emailId ? "border-red-500" : ""
               }`}
             />
-            {errors.email && (
-              <span className="text-red-500 text-sm">{errors.email}</span>
+            {errors.emailId && (
+              <span className="text-red-500 text-sm">{errors.emailId}</span>
             )}
           </div>
           <div className="w-full pl-3 mt-2 mb-4">
@@ -553,10 +533,12 @@ const SignUp = ({ setIsSubmitted }) => {
             <div className="flex float-start w-full">
               <Select
                 name="countryCode"
+              
                 options={countryOptions}
                 onChange={(selectedOption) => {
                   setSelectedCountry(selectedOption.country);
-                  setPersonInfo({ ...personInfo, phone: "" });
+                  setPersonInfo({ ...personInfo, countryCode: `+${selectedOption.country.phone}` });
+        setFormData({ ...formData, countryCode: `+${selectedOption.country.phone}` });
                 }}
                 value={
                   selectedCountry
@@ -690,12 +672,12 @@ const SignUp = ({ setIsSubmitted }) => {
                 )
                   .toISOString()
                   .split("T")[0]
-              } 
+              }
               min={
                 new Date(new Date().setFullYear(new Date().getFullYear() - 100))
                   .toISOString()
                   .split("T")[0]
-              } 
+              }
               className={`w-full px-4 py-2 border border-gray-500 outline-none  ${
                 errors.dob ? "border-red-500" : ""
               }`}
@@ -711,21 +693,21 @@ const SignUp = ({ setIsSubmitted }) => {
             </label>
             <input
               type="text"
-              name="qualification"
+              name="highestQalification"
               maxLength={15}
               placeholder="Enter Your Highest Qualification"
-              value={formData.qualification}
+              value={formData.highestQualification}
               onChange={(e) => {
-                const newValue = e.target.value; 
-                setFormData({ ...formData, qualification: newValue });
+                const newValue = e.target.value;
+                setFormData({ ...formData, highestQualification: newValue });
               }}
               className={`w-full px-4 py-2 border border-gray-500 outline-none ${
-                errors.qualification ? "border-red-500" : ""
+                errors.highestQualification ? "border-red-500" : ""
               }`}
             />
-            {errors.qualification && (
+            {errors.highestQualification && (
               <span className="text-red-500 text-sm">
-                {errors.qualification}
+                {errors.highestQualification}
               </span>
             )}
           </div>
@@ -738,16 +720,16 @@ const SignUp = ({ setIsSubmitted }) => {
               Subjects You Are Expert At:
             </label>
             <textarea
-              name="subject"
-              value={formData.subject}
+              name="subjectsYouAreExpertAt"
+              value={formData.subjectsYouAreExpertAt}
               onChange={handleChange}
               placeholder="Enter Subjects You are expert at"
               className={`w-full px-4 py-2 border border-gray-500 outline-none ${
-                errors.subject ? "border-red-500" : ""
+                errors.subjectsYouAreExpertAt ? "border-red-500" : ""
               } h-10`}
             />
-            {errors.subject && (
-              <span className="text-red-500 text-sm">{errors.subject}</span>
+            {errors.subjectsYouAreExpertAt && (
+              <span className="text-red-500 text-sm">{errors.subjectsYouAreExpertAt}</span>
             )}
           </div>
           <div className="w-1/2 pl-3">
@@ -849,65 +831,65 @@ const SignUp = ({ setIsSubmitted }) => {
               Government ID Proof:
             </label>
             <select
-              name="govtIdProof"
-              value={formData.govtIdProof}
+              name="nationalIdType"
+              value={formData.nationalIdType}
               onChange={handleChange}
               className={`w-full px-4 py-2 border border-gray-500 outline-none${
-                errors.govtIdProof ? "border-red-500" : ""
+                errors.nationalIdType ? "border-red-500" : ""
               }`}
             >
               <option value="">Select ID Proof</option>
               <option value="Aadhaar Card">Aadhaar Card</option>
               <option value="Passport Number">Passport Number</option>
             </select>
-            {errors.govtIdProof && (
-              <span className="text-red-500 text-sm">{errors.govtIdProof}</span>
+            {errors.nationalIdType && (
+              <span className="text-red-500 text-sm">{errors.nationalIdType}</span>
             )}
           </div>
         </div>
 
         {/* Row 8: Aadhaar/Passport Number and Document Upload */}
         <div className="flex mb-3">
-          {formData.govtIdProof && (
+          {formData.nationalIdType && (
             <>
               <div className="w-1/2 pr-3">
                 <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
-                  {formData.govtIdProof === "Aadhaar Card"
+                  {formData.nationalIdType === "Aadhaar Card"
                     ? "Aadhaar Number:"
                     : "Passport Number:"}
                 </label>
                 <input
                   type="text"
                   name={
-                    formData.govtIdProof === "Aadhaar Card"
-                      ? "aadhaarNumber"
+                    formData.nationalIdType === "Aadhaar Card"
+                      ? "nationalIdNum"
                       : "passportNumber"
                   }
                   value={
-                    formData.govtIdProof === "Aadhaar Card"
-                      ? formData.aadhaarNumber
+                    formData.nationalIdType === "Aadhaar Card"
+                      ? formData.nationalIdNum
                       : formData.passportNumber
                   }
                   onChange={handleChange}
-                  maxLength={formData.govtIdProof === "Aadhaar Card" ? 12 : 8} 
+                  maxLength={formData.nationalIdType === "Aadhaar Card" ? 12 : 8}
                   className={`w-full px-4 py-2 border border-gray-500 outline-none ${
-                    formData.govtIdProof === "Aadhaar Card" &&
-                    errors.aadhaarNumber
+                    formData.nationalIdType === "Aadhaar Card" &&
+                    errors.nationalIdNum
                       ? "border-red-500"
-                      : formData.govtIdProof === "Passport Number" &&
+                      : formData.nationalIdType === "Passport Number" &&
                         errors.passportNumber
                       ? "border-red-500"
                       : ""
                   }`}
                 />
 
-                {formData.govtIdProof === "Aadhaar Card" &&
-                  errors.aadhaarNumber && (
+                {formData.nationalIdType === "Aadhaar Card" &&
+                  errors.nationalIdNum && (
                     <span className="text-red-500 text-sm">
-                      {errors.aadhaarNumber}
+                      {errors.nationalIdNum}
                     </span>
                   )}
-                {formData.govtIdProof === "Passport Number" &&
+                {formData.nationalIdType === "Passport Number" &&
                   errors.passportNumber && (
                     <span className="text-red-500 text-sm">
                       {errors.passportNumber}
@@ -919,7 +901,7 @@ const SignUp = ({ setIsSubmitted }) => {
                 {/* Document Upload */}
                 <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
                   Upload{" "}
-                  {formData.govtIdProof === "Aadhaar Card"
+                  {formData.nationalIdType === "Aadhaar Card"
                     ? "Aadhaar Document:"
                     : "Passport Document:"}
                 </label>

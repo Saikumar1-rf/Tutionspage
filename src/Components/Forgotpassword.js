@@ -396,8 +396,7 @@ const Forgotpass = () => {
           </button>
           <div className="flex justify-center mt-4">
                 <p>Back To<button
-                  className="text-blue-500 texpy-2 px-4 rounded-lg focus:outline-none underline"
-                >
+                  className="text-blue-500 texpy-2 px-4 rounded-lg focus:outline-none underline">
                  <Link to='/login'>Login</Link>
                 </button>
                 </p>

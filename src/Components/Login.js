@@ -146,8 +146,14 @@ const Login = () => {
         <div className="text-center mt-6">
           <p className="text-sm text-gray-600">
             Don't Have An Account?{' '}
-            <Link to="/student" className="text-blue-500 hover:text-blue-500 font-medium underline p-3">Student Register</Link>
-            <Link to="/tutor" className="text-blue-500 hover:text-blue-500 font-medium underline">Tutor</Link>
+            <Link to="/student" className="text-blue-500 hover:text-blue-500 font-medium underline p-3">S/Register</Link>
+            <Link to="/tutor" className="text-blue-500 hover:text-blue-500 font-medium underline">T/Register</Link>
+            <Link to="/studentuser" className="text-blue-500 hover:text-blue-500 font-medium underline p-3">Student/tutor</Link>
+            <Link to="/createpassword" className="text-blue-500 hover:text-blue-500 font-medium underline">Createpassword</Link>
+            {/* <Link to="/saikumar" className="text-blue-500 hover:text-blue-500 font-medium underline">Saikumar</Link> */}
+            <Link to="/tutorpage" className="text-blue-500 hover:text-blue-500 font-medium underline ml-3">Admin</Link>
+            {/* <Link to="/homepage" className="text-blue-500 hover:text-blue-500 font-medium underline ml-3">Homepage</Link> */}
+            <Link to="/tutordashboard" className="text-blue-500 hover:text-blue-500 font-medium underline ml-3">Tutordashboard</Link>
           </p>
         </div>
       </div>
