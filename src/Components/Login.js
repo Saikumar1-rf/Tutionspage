@@ -151,7 +151,7 @@ const Login = () => {
             <Link to="/studentuser" className="text-blue-500 hover:text-blue-500 font-medium underline p-3">Student/tutor</Link>
             <Link to="/createpassword" className="text-blue-500 hover:text-blue-500 font-medium underline">Createpassword</Link>
             {/* <Link to="/saikumar" className="text-blue-500 hover:text-blue-500 font-medium underline">Saikumar</Link> */}
-            <Link to="/tutorpage" className="text-blue-500 hover:text-blue-500 font-medium underline ml-3">Admin</Link>
+            {/* <Link to="/tutorpage" className="text-blue-500 hover:text-blue-500 font-medium underline ml-3">Admin</Link> */}
             {/* <Link to="/homepage" className="text-blue-500 hover:text-blue-500 font-medium underline ml-3">Homepage</Link> */}
             <Link to="/tutordashboard" className="text-blue-500 hover:text-blue-500 font-medium underline ml-3">Tutordashboard</Link>
           </p>
