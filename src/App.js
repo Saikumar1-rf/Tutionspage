@@ -15,24 +15,30 @@ import Tutordashboard from "./Components/Tutordashboard";
 import About from "./Components/About";
 import Home from "./Components/Home";
 import Carrers from "./Components/Carrers";
+import Payment from "./Components/Payment";
+import Header from "./Components/Header";
+
 
 
 function App() {
   const [isSubmitted, setIsSubmitted] = useState(false); // State for form submission
-  const [studentDetails, setStudentDetails] = useState([]);
-  const [tutorDetails, setTutorDetails] = useState([]);
+  
 
- 
   return (
+
+    <>
+    {/* <Homepage/> */}
+    
     <div className="App">
       <Routes>
         <Route path="/" element={<Login />} />
+        {/* <Route path="/"element={<Successfull/>}></Route> */}
         <Route path="/login" element={<Login />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/student" element={<Student />} />
-        <Route path="/tutor" element={<SignUp setIsSubmitted={setIsSubmitted} />} />
-        <Route path="/success" element={<Successfull isSubmitted={isSubmitted} />} />
-        <Route path="/tutorpage" element={<Tutorpage />} />
+        <Route path="/signuptutor" element={<SignUp setIsSubmitted={setIsSubmitted} />} />
+        {/* <Route path="/success" element={<Successfull isSubmitted={isSubmitted} />} /> */}
+        <Route path="/admin" element={<Tutorpage />} />
         <Route path="/saikumar" element={<Saikumar/>} />
         <Route path="/studentuser" element={<Studentuser />} />
         <Route path="/createpassword" element={<Createpassword />} />
@@ -40,12 +46,11 @@ function App() {
         <Route path="/tutordashboard" element={<Tutordashboard />} />
         <Route path="/about" element={<About />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/carrers" element={<Carrers />} />
-        {/* <Route path="/carrers" element={<Carrers studentDetails={studentDetails} tutorDetails={tutorDetails} />} /> */}
         <Route path="/carrers" element={<Carrers/>} />
-
+        <Route path="/payment"element={<Payment/>} />
       </Routes>
     </div>
+    </>
   );
 }
 

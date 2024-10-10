@@ -7,7 +7,6 @@ import teacher from '../assets/teachermode.jpg';
 const Benifits = () => {
   return (
     <>
-      <Homepage />
       {/* Overall Background */}
       <div className='bg-gray-100 min-h-screen flex justify-center items-center p-8'>
         {/* Main Flex Container */}

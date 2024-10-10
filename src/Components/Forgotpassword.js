@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ImCross } from "react-icons/im";
 import { FaCheck, FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import axios from 'axios';
 
 const Forgotpass = () => {
   const [inputValue, setInputValue] = useState("");
@@ -42,16 +43,16 @@ const Forgotpass = () => {
     return () => clearInterval(countdown);
   }, [otp, timer]);
 
-  const validateEmail = (email) => {
+  const validateEmailId = (emailId) => {
       //  const emailRegex = /^[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@[a-zA-Z]+\.[a-zA-Z]{2,}(\.com)?$/;
       // const emailRegex=/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         //  const emailRegex=/^[a-z0-9]+(\.[a-z0-9]+)*@[a-z]{2,}(\.com||\.in)$/;/^[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail||yahoo||org||outlook||hotmail||example||sai)\.(com||net||org||in||edu||gov||mil||co||us||info||org\.in)$/;const emailRegex = /^(?!\d)[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail|yahoo|org|outlook|hotmail|example|sai)\.(com|net|org|in|edu|gov|mil|co\.in|us|info|org\.in)$/;
 // const emailRegex=/^(?!\d)[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail||yahoo||org||outlook||hotmail||example||sai)\.(com|net|org|in||edu||gov||mil||us||info||org\.in)$/;
-   const emailRegex = /^(?!\d)[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail|yahoo|outlook|hotmail|example|sai)\.(com|net|org|in|edu|gov|mil|us|info|org\.in)$/;
-      return emailRegex.test(email) && !/\s/.test(email); // Ensure no spaces are present
+   const emailIdRegex = /^(?!\d)[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail|yahoo|outlook|hotmail|example|sai)\.(com|net|org|in|edu|gov|mil|us|info|org\.in)$/;
+      return emailIdRegex.test(emailId) && !/\s/.test(emailId); // Ensure no spaces are present
   };
 
-  const handleEmailChange = (e) => {
+  const handleEmailIdChange = (e) => {
     const value=e.target.value;
     const formattedValue = value.replace(/\s+/g, "").replace(/[A-Z]/g,'');
     setInputValue(formattedValue);
@@ -72,31 +73,40 @@ const Forgotpass = () => {
     return passwordErrors;
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     let validationErrors = {};
 
     if (!inputValue) {
-      validationErrors.email = "Input cannot be empty.";
-    } else if (!validateEmail(inputValue)) {
-      validationErrors.email =
-        "Please enter a valid email address";
-    } else if (validateEmail(inputValue) && !validateEmail(inputValue)) {
-      validationErrors.email = "Invalid email format. Please check and try again.";
+      validationErrors.emailId = "Input cannot be empty.";
+    } else if (!validateEmailId(inputValue)) {
+      validationErrors.emailId = "Please enter a valid email address";
     }
-
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
     } else {
       setErrors({});
       console.log("Verified: ", inputValue);
-      setOtp(true); // Simulate OTP being sent and display OTP fields
-      setTimer(60); // Start the 60-second timer
-      setCanResendOtp(false); // Disable resend option until timer runs out
-      setIsVerified(true);
 
+      try {
+        const response = await axios.post('http://192.168.0.249:8080/tuition-application/authenticate/forgotPassword?emailId=${}', {
+          emailId: inputValue, // Send the email in the request body
+        });
+        
+        // Handle response based on your API design
+        console.log(response.data); // You can log the response to see what you receive
+        setOtp(true); // Simulate OTP being sent and display OTP fields
+        setTimer(60); // Start the 60-second timer
+        setCanResendOtp(false); // Disable resend option until timer runs out
+        setIsVerified(true);
+        
+      } catch (error) {
+        console.error("Error sending email:", error);
+        setErrors({ emailId: "Failed to send email. Please try again." }); // Show an error if the request fails
+      }
     }
   };
+
 
   const handleResendOtp = () => {
     console.log("OTP resent to: ", inputValue);
@@ -130,20 +140,20 @@ const Forgotpass = () => {
     e.preventDefault();
     const passwordErrors = validatePasswords();
 
-    const emailErrors = {};
+    const emailIdErrors = {};
 
     // Check if the inputValue is empty
     if (!inputValue) {
-        emailErrors.email = "Email is required.";
-    } else if (!validateEmail(inputValue)) {
-        emailErrors.email = "Please enter a valid email address";
+        emailIdErrors.emailId = "EmailId is required.";
+    } else if (!validateEmailId(inputValue)) {
+        emailIdErrors.emailId = "Please enter a valid email address";
     }
 
     // If there are email errors, set them in the errors state
-    if (Object.keys(emailErrors).length > 0) {
+    if (Object.keys(emailIdErrors).length > 0) {
         setErrors((prevErrors) => ({
             ...prevErrors,
-            ...emailErrors,
+            ...emailIdErrors,
         }));
         return; // Exit early if there are errors
     }
@@ -178,16 +188,16 @@ const Forgotpass = () => {
           {/* Email Input */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Email id 
+              EmailId
             </label>
             <div className="flex items-center space-x-2">
               <input
                 type="text"
-                placeholder="Email id"
+                placeholder="emailId"
                 value={inputValue}
                 maxLength="30"
                 // maxLength={validatePhoneNumber(email)  ? 10 : 30} 
-                onChange={handleEmailChange}
+                onChange={handleEmailIdChange}
                 className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
               <button
@@ -199,8 +209,8 @@ const Forgotpass = () => {
                 Verify
               </button>
             </div>
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1 ">{errors.email }</p>
+            {errors.emailId && (
+              <p className="text-red-500 text-sm mt-1 ">{errors.emailId }</p>
             )}
              {errors.verification && (
               <p className="text-red-500 text-sm mt-1">{errors.verification}</p>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaSearch, FaBars } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const Homepage = () => {
+const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const [showSignUpOptions, setShowSignUpOptions] = useState(false);
@@ -35,8 +35,8 @@ const Homepage = () => {
           <ul className="flex space-x-4 text-black justify-between">
             <Link to='/home'><li className="cursor-pointer hover:text-gray-200 px-4">Home</li></Link>
            <Link to='/about'><li className="cursor-pointer hover:text-gray-200 px-4">About</li></Link> 
-          <Link to='/Carrers'><li className="cursor-pointer hover:text-gray-200 px-4">Carrers</li></Link>
-             <li className="cursor-pointer hover:text-gray-200 px-4">Contact Us</li>
+          {/* <Link to='/Carrers'><li className="cursor-pointer hover:text-gray-200 px-4">Carrers</li></Link> */}
+          <li className="cursor-pointer hover:text-gray-200 px-4">Contact Us</li>
           </ul>
 
           {/* Dropdown Icon for smaller screens */}
@@ -78,4 +78,4 @@ const Homepage = () => {
   );
 };
 
-export default Homepage;
+export default Header;

@@ -1,27 +1,34 @@
 import { useState, useEffect } from "react";
-// import { phone } from "phone";
 import { countries } from "./countries";
 import Select from "react-select";
-const Student = () => {
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+const Student = ({ setIsSubmitted }) => {
   const [formData, setFormData] = useState({
-    firstname: "",
-    lastname: "",
-    email: "",
+    firstName: "",
+    lastName: "",
+    emailId: "",
     phoneNumber: "",
-    dateofbirth: "",
+    countryCode: "",
+    dob: "",
     location: "",
     gender: "",
-    studyingclass: "",
+    studentClass: "",
     board: "",
-    school: "",
-    subject: "",
-    teaching: "",
-    afford: "",
-    timings: "",
+    institution: "",
+    category: "",
+    subjectsLookingFor: "",
+    modeOfTeaching: "",
+    affordablity: "",
+    availableTimings: "",
   });
+  const navigate = useNavigate();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   //Mobile Number Validation//
-  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedCountry, setSelectedCountry] = useState("");
   const [personInfo, setPersonInfo] = useState({
     phone: "",
   });
@@ -53,16 +60,16 @@ const Student = () => {
       }
     } else {
       const validInputPattern = /^[a-zA-Z0-9\s]*$/;
-    if (!validInputPattern.test(value)) {
-      errorMessage = "Special characters are not allowed.";
-    } else if(value.length > 30)  {
+      if (!validInputPattern.test(value)) {
+        errorMessage = "Special characters are not allowed.";
+      } else if (value.length > 30) {
         errorMessage = "Studying Class can only have up to 30 characters";
       }
     }
 
     setErrors((prevErrors) => ({
       ...prevErrors,
-      studyingclass: errorMessage,
+      studentClass: errorMessage,
     }));
 
     if (!errorMessage) {
@@ -81,12 +88,13 @@ const Student = () => {
     const validInputPattern = /^[a-zA-Z0-9\s,]*$/;
 
     if (!validInputPattern.test(value)) {
-      errorMessage = "Special characters are not allowed except for commas to separate subjects.";
+      errorMessage =
+        "Special characters are not allowed except for commas to separate subjects.";
     }
 
     setErrors((prevErrors) => ({
       ...prevErrors,
-      subject: errorMessage,
+      subjectsLookingFor: errorMessage,
     }));
 
     if (!errorMessage && value.length <= 50) {
@@ -97,9 +105,10 @@ const Student = () => {
     }
   };
 
-  const [timings, setTimings] = useState([]);
+  const [availableTimings, setTimings] = useState([]);
 
   //timing slots validations
+
   const generateTimings = () => {
     const timings = [];
     const startHour = 0; // 00:00 (12 AM in 24-hour format)
@@ -140,12 +149,12 @@ const Student = () => {
     const formattedMinute = minute < 10 ? `0${minute}` : minute; // Add leading zero for minutes
     return `${formattedHour}:${formattedMinute} ${amPm}`; // Return in HH:mm AM/PM format
   };
-// useEffect to set the generated timings on component mount
-useEffect(() => {
-  const availableTimings = generateTimings();
-  setTimings(availableTimings);
-  console.log(availableTimings); // To log the available timings in IST format
-}, []);
+  // useEffect to set the generated timings on component mount
+  useEffect(() => {
+    const availableTimings = generateTimings();
+    setTimings(availableTimings);
+    console.log(availableTimings); // To log the available timings in IST format
+  }, []);
 
   //Date of Birth
   const isLeapYear = (year) => {
@@ -172,57 +181,102 @@ useEffect(() => {
         return 31;
     }
   };
-
-  // const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrors({});
-
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length === 0) {
-      console.log("form submitted successfully", formData);
-      // setIsSuccessModalVisible(true);
+  
+    const newErrors = validate();
+    if (Object.keys(newErrors).length === 0) {
+      try {
+        // Create FormData to handle file and other data
+        const formDataToSend = new FormData();
+        formDataToSend.append("firstName", formData.firstName);
+        formDataToSend.append("lastName", formData.lastName);
+        formDataToSend.append("emailId", formData.emailId);
+        formDataToSend.append("countryCode", formData.countryCode);
+        formDataToSend.append("phoneNumber", formData.phoneNumber);
+        formDataToSend.append("location", formData.location);
+        formDataToSend.append("gender", formData.gender);
+        formDataToSend.append("dob", formData.dob);
+        formDataToSend.append("studentClass", formData.studentClass);
+        formDataToSend.append("subjectsLookingFor", formData.subjectsLookingFor);
+        formDataToSend.append("affordablity", formData.affordablity); 
+        formDataToSend.append("institution", formData.institution);
+        formDataToSend.append("board", formData.board);
+        formDataToSend.append("modeOfTeaching", formData.modeOfTeaching);
+        formDataToSend.append("category", formData.category);
+        formDataToSend.append("availableTimings", formData.availableTimings);
+        // formDataToSend.append("file", formData.file); // Add the file if needed
+  
+        console.log("form submit", formDataToSend);
+  
+        // Axios POST request
+        const response = await axios.post(
+          "http://192.168.0.249:8080/tution-application/student/create",
+          formDataToSend,
+          {
+            headers: {
+              "Content-Type": "application/json", 
+            },
+          }
+        );
+  
+        // Handle response
+        console.log("Form submitted successfully", response.data);
+  
+        // If successful, set the submission state and navigate to the success page
+        setIsSubmitted(true);
+        navigate("/success");
+      } catch (error) {
+        // Handle error
+        console.error("Error submitting form", error);
+      }
     } else {
-      setErrors(validationErrors);
+      setErrors(newErrors);
     }
+  };
+  
+
+  const handleNextClick = (e) => {
+    e.preventDefault(); // Prevents the form's default behavior
+    handleSubmit(e);
   };
 
   //Affordability per month
   const handleAffordChange = (e) => {
     const { name, value } = e.target;
-  
-    // Check if the input value is numeric
-    if (/^[0-9]*$/.test(value)) {
+
+    // Allow numeric values including decimal points
+    if (/^\d*\.?\d*$/.test(value) || value === "") {
+      const affordValue = value === "" ? "" : parseFloat(value); // Handle empty string appropriately
+
       if (value === "0") {
-        // Set error for zero input
         setErrors((prevState) => ({
           ...prevState,
-          afford: "Zero is not allowed as a valid amount.",
+          affordablity: "Zero is not allowed as a valid amount.",
         }));
       } else {
-        // If valid input, update the form data
+        // If valid input, update the form data as a number
         setFormData((prevState) => ({
           ...prevState,
-          [name]: value,
+          [name]: affordValue,
         }));
         // Clear any existing errors
         setErrors((prevState) => ({
           ...prevState,
-          afford: "",
+          affordablity: "",
         }));
       }
     } else {
-      // Set error if input is not numeric
+      // Set error if input is not a valid number
       setErrors((prevState) => ({
         ...prevState,
-        afford: "Only numeric values are allowed.",
+        affordablity: "Only numeric values are allowed.",
       }));
     }
   };
-  
+
   const handleKeyDown = (e) => {
-    // Allow: backspace, delete, tab, escape, enter, and arrow keys
+    // Allow: backspace, delete, tab, escape, enter, arrow keys, and decimal point
     if (
       e.key === "Backspace" ||
       e.key === "Delete" ||
@@ -230,7 +284,8 @@ useEffect(() => {
       e.key === "Escape" ||
       e.key === "Enter" ||
       e.key === "ArrowLeft" ||
-      e.key === "ArrowRight"
+      e.key === "ArrowRight" ||
+      e.key === "."
     ) {
       return;
     }
@@ -247,7 +302,7 @@ useEffect(() => {
     const today = new Date();
     const CurrentYear = today.getFullYear();
     const [year, month, day] = value.split("-");
-    let errorMsg = '';
+    let errorMsg = "";
 
     if (year && (year.length !== 4 || parseInt(year) > CurrentYear)) {
       errorMsg =
@@ -271,7 +326,7 @@ useEffect(() => {
     if (value === "0") {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        studyingclass: "Zero is not allowed as a valid entry.",
+        studentClass: "Zero is not allowed as a valid entry.",
       }));
       return; // Prevent further processing
     }
@@ -280,7 +335,6 @@ useEffect(() => {
       [name]: newValue,
     });
   };
-
   // Function to detect the user's location using the Geolocation API
   const detectLocation = () => {
     if (navigator.geolocation) {
@@ -288,17 +342,13 @@ useEffect(() => {
         (position) => {
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
-
-          // Use reverse geocoding to get the city, state, area, and country
           fetch(
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`
           )
             .then((response) => response.json())
             .then((data) => {
-              const { suburb, city, state, country } = data.address;
-              const exactLocation = `${suburb}, ${city}, ${state}, ${country}`;
-
-              // Set the location as "Area, City, State, Country"
+              const { suburb, city, state, country, postcode } = data.address;
+              const exactLocation = `${suburb}, ${city}, ${state}, ${country},${postcode}`;
               setFormData((prevFormData) => ({
                 ...prevFormData,
                 location: exactLocation,
@@ -360,26 +410,24 @@ useEffect(() => {
   const validate = () => {
     const newErrors = {};
     //first Name
-    if (!formData.firstname.trim()) {
-      newErrors.firstname = "First Name is required";
-    } else if (formData.firstname.trim().length < 3) {
-      newErrors.firstname = "First Name must be at least 3 characters";
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First Name is required";
+    } else if (formData.firstName.trim().length < 3) {
+      newErrors.firstName = "First Name must be at least 3 characters";
     }
     //last Name
-    if (!formData.lastname.trim()) {
-      newErrors.lastname = "last Name is required";
-    } else if (formData.lastname.trim().length < 3) {
-      newErrors.lastname = "Last Name must be at least 3 characters";
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "last Name is required";
+    } else if (formData.lastName.trim().length < 3) {
+      newErrors.lastName = "Last Name must be at least 3 characters";
     }
+    const emailRegex =
+      /^(?!\d)[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail|yahoo|outlook|hotmail|example|sai)\.(com|net|org|in|edu|gov|mil|us|info|org\.in)$/;
 
-    // const emailRegex =
-      // /^[a-zA-Z0-9._%+-]+@(gmail|yahoo|hotmail|outlook|icloud)\.(com|net|edu|org|gov|mil|in|co|us|info|io|biz)$/;
-    const emailRegex =/^(?!\d)[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail|yahoo|outlook|hotmail|example|sai)\.(com|net|org|in|edu|gov|mil|us|info|org\.in)$/;
-
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = "Invalid email format";
+    if (!formData.emailId) {
+      newErrors.emailId = "emailId is required";
+    } else if (!emailRegex.test(formData.emailId)) {
+      newErrors.emailId = "Invalid email format";
     }
     //phoneNumber
     const phoneRegex = /^[6-9]\d{9}$/;
@@ -398,15 +446,16 @@ useEffect(() => {
     }
 
     //school/college
-    if (!formData.school.trim()) {
-      newErrors.school = "School/college is required";
-    } else if (formData.school.trim().length < 3) {
-      newErrors.school = "School/College Name must be at least 3 characters";
+    if (!formData.institution.trim()) {
+      newErrors.institution = "School/college is required";
+    } else if (formData.institution.trim().length < 3) {
+      newErrors.institution =
+        "School/College Name must be at least 3 characters";
     }
 
     //date of birth
-    if (!formData.dateofbirth.trim()) {
-      newErrors.dateofbirth = "Date of Birth is required";
+    if (!formData.dob.trim()) {
+      newErrors.dob = "Date of Birth is required";
     }
 
     //location
@@ -420,30 +469,39 @@ useEffect(() => {
     }
 
     //studying class
-    if (!formData.studyingclass.trim()) {
-      newErrors.studyingclass = "Studying Class is required";
+    if (!formData.studentClass.trim()) {
+      newErrors.studentClass = "Studying Class is required";
+    }
+    //category
+    if (!formData.category) {
+      newErrors.category = "Category is required";
     }
 
     //Subject
-    if (!formData.subject.trim()) {
-      newErrors.subject = "Subject tuition looking for is required";
-    } else if (formData.subject.length < 2) {
-      newErrors.subject = "Subject Name must be at least 2 characters";
+    if (!formData.subjectsLookingFor.trim()) {
+      newErrors.subjectsLookingFor = "Subject tuition looking for is required";
+    } else if (formData.subjectsLookingFor.length < 2) {
+      newErrors.subjectsLookingFor =
+        "SubsubjectsLookingForject Name must be at least 2 characters";
     }
 
     //mode of teaching
-    if (!formData.teaching.trim()) {
-      newErrors.teaching = "Mode of teaching is required";
+    if (!formData.modeOfTeaching.trim()) {
+      newErrors.modeOfTeaching = "Mode of teaching is required";
     }
 
     //affordability
-    if (!formData.afford.trim()) {
-      newErrors.afford = "Your Affordability per month is required";
+    if (typeof formData.affordablity === "string") {
+      if (!formData.affordablity.trim()) {
+        newErrors.affordablity = "Affordability is required";
+      }
+    } else if (!formData.affordablity || formData.affordablity <= 0) {
+      newErrors.affordablity = "Affordability must be greater than zero";
     }
 
     //timings
-    if (!formData.timings.trim()) {
-      newErrors.timings = "timings is required";
+    if (!formData.availableTimings.trim()) {
+      newErrors.availableTimings = "timings is required";
     }
 
     return newErrors;
@@ -464,20 +522,20 @@ useEffect(() => {
             </label>
             <input
               type="text"
-              id="firstname"
+              id="firstName"
               minLength={3}
               maxLength={20}
-              name="firstname"
+              name="firstName"
               onChange={handleChange}
               onKeyDown={handleNameChar}
-              value={formData.firstname}
+              value={formData.firstName}
               placeholder="Enter your First Name"
               className={`w-[300px] py-2 px-2 mr-6 border border-gray-500 outline-none  ${
-                errors.firstname ? "border-red-500" : ""
+                errors.firstName ? "border-red-500" : ""
               }`}
             ></input>
-            {errors.firstname && (
-              <span className="text-red-500 text-sm">{errors.firstname}</span>
+            {errors.firstName && (
+              <span className="text-red-500 text-sm">{errors.firstName}</span>
             )}
           </div>
 
@@ -489,20 +547,20 @@ useEffect(() => {
             </label>
             <input
               type="text"
-              id="lastname"
+              id="lastName"
               minLength={3}
               maxLength={20}
-              name="lastname"
+              name="lastName"
               onChange={handleChange}
               onKeyDown={handleNameChar}
-              value={formData.lastname}
+              value={formData.lastName}
               placeholder="Enter your Last Name"
               className={`w-[300px] py-2 px-2 mr-6 border border-gray-500 outline-none  ${
-                errors.lastname ? "border-red-500" : ""
+                errors.lastName ? "border-red-500" : ""
               }`}
             ></input>
-            {errors.firstname && (
-              <span className="text-red-500 text-sm">{errors.lastname}</span>
+            {errors.firstName && (
+              <span className="text-red-500 text-sm">{errors.lastName}</span>
             )}
           </div>
         </div>
@@ -514,20 +572,20 @@ useEffect(() => {
               Email Id
             </label>
             <input
-              type="email"
-              id="email"
-              name="email"
+              type="emailId"
+              id="emailId"
+              name="emailId"
               maxLength={30}
-              value={formData.email}
+              value={formData.emailId}
               onChange={handleChange}
               onInput={handleInput}
               placeholder="Enter your Email Id"
               className={`w-[300px] py-2 px-2 border border-gray-500 outline-none  ${
-                errors.email ? "border-red-500" : ""
+                errors.emailId ? "border-red-500" : ""
               }`}
             ></input>
-            {errors.email && (
-              <span className="text-red-500 text-sm">{errors.email}</span>
+            {errors.emailId && (
+              <span className="text-red-500 text-sm">{errors.emailId}</span>
             )}
           </div>
 
@@ -539,19 +597,24 @@ useEffect(() => {
             <div className="flex float-start">
               <Select
                 name="countryCode"
+                id="mobileNumber"
                 options={countryOptions}
                 onChange={(selectedOption) => {
                   setSelectedCountry(selectedOption.country);
-                  setPersonInfo({ ...personInfo, phone: "" });
-                  setErrors((prev) => ({ ...prev, phoneNumber: null })); // Clear errors on country change
+                  setPersonInfo({
+                    ...personInfo,
+                    countryCode: `+${selectedOption.country.phone}`,
+                  });
+                  setFormData({
+                    ...formData,
+                    countryCode: `+${selectedOption.country.phone}`,
+                  });
                 }}
                 value={
                   selectedCountry
                     ? {
                         value: selectedCountry.code,
-                        label: `+${String(selectedCountry.phone)} ${
-                          selectedCountry.label
-                        }`,
+                        label: `+${selectedCountry.phone} ${selectedCountry.label}`,
                       }
                     : null
                 }
@@ -616,7 +679,6 @@ useEffect(() => {
               <span className="text-red-500 text-sm">{errors.phoneNumber}</span>
             )}
           </div>
-          
         </div>
 
         {/* ------------Date of birth------------------ */}
@@ -627,13 +689,13 @@ useEffect(() => {
             </label>
             <input
               type="date"
-              id="dateofbirth"
-              name="dateofbirth"
-              value={formData.dateofbirth}
+              id="dob"
+              name="dob"
+              value={formData.dob}
               // max={new Date().toISOString().split("T")[0]}
               max={
                 new Date(
-                  new Date().setFullYear(new Date().getFullYear() -4) - 1
+                  new Date().setFullYear(new Date().getFullYear() - 4) - 1
                 )
                   .toISOString()
                   .split("T")[0]
@@ -645,13 +707,13 @@ useEffect(() => {
               } // Disable dates more than 100 years ago
               onChange={handleChange}
               className={`w-[300px] py-2 px-2 border border-gray-500 outline-none  ${
-                errors.dateofbirth ? "border-red-500" : ""
+                errors.dob ? "border-red-500" : ""
               }`}
               // style={{pointerEvents:'none'}} //Disable manual typing
               onKeyDown={(e) => e.preventDefault()}
             ></input>
-            {errors.dateofbirth && (
-              <span className="text-red-500 text-sm">{errors.dateofbirth}</span>
+            {errors.dob && (
+              <span className="text-red-500 text-sm">{errors.dob}</span>
             )}
           </div>
 
@@ -706,18 +768,18 @@ useEffect(() => {
             </label>
             <input
               type="text"
-              id="studyingclass"
-              name="studyingclass"
-              value={formData.studyingclass}
+              id="studentClass"
+              name="studentClass"
+              value={formData.studentClass}
               onChange={handleStudyingClassChange}
               placeholder="Enter your Standard/Class"
               className={`w-[300px] py-2 px-2 border border-gray-500 outline-none  ${
-                errors.studyingclass ? "border-red-500" : ""
+                errors.studentClass ? "border-red-500" : ""
               }`}
             ></input>
-            {errors.studyingclass && (
+            {errors.studentClass && (
               <span className="text-red-500 text-sm">
-                {errors.studyingclass}
+                {errors.studentClass}
               </span>
             )}
           </div>
@@ -750,23 +812,23 @@ useEffect(() => {
           {/* --------school--------- */}
           <div className="my-2">
             <label className="float-start  text-sm font-medium text-gray-700">
-              School/College
+              School/institution
             </label>
             <input
               type="text"
-              id="school"
-              name="school"
-              value={formData.school}
+              id="institution"
+              name="institution"
+              value={formData.institution}
               maxLength={50}
               onKeyDown={handleNameChar}
               onChange={handleChange}
-              placeholder="Enter your School/College"
+              placeholder="Enter your School/institution"
               className={`w-[300px] py-2 px-2 border border-gray-500 outline-none  ${
-                errors.school ? "border-red-500" : ""
+                errors.institution ? "border-red-500" : ""
               }`}
             ></input>
-            {errors.school && (
-              <span className="text-red-500 text-sm">{errors.school}</span>
+            {errors.institution && (
+              <span className="text-red-500 text-sm">{errors.institution}</span>
             )}
           </div>
         </div>
@@ -779,18 +841,20 @@ useEffect(() => {
             </label>
             <input
               type="text"
-              name="subject"
+              name="subjectsLookingFor"
               placeholder="Enter Subject you are Looking for"
-              value={formData.subject}
+              value={formData.subjectsLookingFor}
               maxLength={50}
               onChange={handleSubjectChange}
               // onKeyDown={handleNameChar}
               className={`w-[300px] py-2 px-2 border border-gray-500 outline-none  ${
-                errors.subject ? "border-red-500" : ""
+                errors.subjectsLookingFor ? "border-red-500" : ""
               }`}
             />
-            {errors.subject && (
-              <span className="text-red-500 text-sm">{errors.subject}</span>
+            {errors.subjectsLookingFor && (
+              <span className="text-red-500 text-sm">
+                {errors.subjectsLookingFor}
+              </span>
             )}
           </div>
           {/* ----------mode of teaching----------- */}
@@ -799,8 +863,8 @@ useEffect(() => {
               Mode of Teaching
             </label>
             <select
-              name="teaching"
-              value={formData.teaching}
+              name="modeOfTeaching"
+              value={formData.modeOfTeaching}
               onChange={handleChange}
               className="w-[300px] py-2 border border-gray-500 outline-none "
             >
@@ -809,8 +873,10 @@ useEffect(() => {
               <option value="Tutor Home">Tutor Home</option>
               <option value="Virtual Mode">Virtual Mode</option>
             </select>
-            {errors.teaching && (
-              <span className="text-red-500 text-sm">{errors.teaching}</span>
+            {errors.modeOfTeaching && (
+              <span className="text-red-500 text-sm">
+                {errors.modeOfTeaching}
+              </span>
             )}
           </div>
         </div>
@@ -823,48 +889,55 @@ useEffect(() => {
             </label>
             <input
               type="text"
-              name="afford"
+              name="affordablity"
               placeholder="Your affordability per month"
-              value={formData.afford}
-              onChange={handleAffordChange}
+              value={formData.affordablity}
+              onChange={(e)=> setFormData({...formData,affordablity:e.target.value})}
               onKeyDown={handleKeyDown}
               maxLength={7}
               className={`w-[300px] py-2 px-2 border border-gray-500 outline-none  ${
-                errors.afford ? "border-red-500" : ""
+                errors.affordablity ? "border-red-500" : ""
               }`}
             />
-            {errors.afford && (
-              <span className="text-red-500 text-sm">{errors.afford}</span>
+            {errors.affordablity && (
+              <span className="text-red-500 text-sm">
+                {errors.affordablity}
+              </span>
             )}
           </div>
 
-          
-            {/* timing slots */}
+          {/* timing slots */}
           <div className="my-3">
             <label className="float-start text-sm font-medium text-gray-700">
               Available Time slots
             </label>
             <select
-              name="timings"
-              value={formData.timings}
+              name="availableTimings"
+              value={formData.availableTimings}
               onChange={handleChange}
               className={`w-[300px] py-1.5 border border-gray-500 outline-none  ${
-                errors.timings ? "border-red-500" : ""
+                errors.availableTimings ? "border-red-500" : ""
               }`}
             >
-             <option value=''>Select Available Timing</option>
-             {timings.map((timing, index)=> (
-              <option key={index} value={timing}>{timing}</option>
-             ))} 
+              <option value="">Select Available Timing</option>
+              {availableTimings.map((timing, index) => (
+                <option key={index} value={timing}>
+                  {timing}
+                </option>
+              ))}
             </select>
-            {errors.timings && (
-              <span className="text-red-500 text-sm">{errors.timings}</span>
+            {errors.availableTimings && (
+              <span className="text-red-500 text-sm">
+                {errors.availableTimings}
+              </span>
             )}
           </div>
         </div>
         <div>
           <div>
-            <label className="float-start text-sm font-medium text-gray-700">Category</label>
+            <label className="float-start text-sm font-medium text-gray-700">
+              Category
+            </label>
             <input
               type="text"
               name="category"
@@ -876,15 +949,16 @@ useEffect(() => {
                 errors.category ? "border-red-500" : ""
               }`}
             />
-            
           </div>
-          <div className="flex justify-end">
-          <button
-            type="submit"
-            className=" bg-blue-500 mt-10 text-white py-2 px-4 rounded-md  font-semibold  hover:bg-blue-400"
-          >
-            Next
-          </button>
+          <div className="flex justify-end mb-4">
+            <button
+              type="button"
+              className="w-24 bg-blue-600 text-white py-2  hover:bg-blue-500"
+              onClick={handleNextClick}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Submitting..." : "NEXT"}
+            </button>
           </div>
         </div>
       </form>

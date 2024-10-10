@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
+
 import { countries } from "./countries";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +9,7 @@ const SignUp = ({ setIsSubmitted }) => {
     firstName: "",
     lastName: "",
     emailId: "",
-    countryCode:"",
+    countryCode: "",
     phoneNumber: "",
     location: "",
     gender: "",
@@ -27,7 +28,7 @@ const SignUp = ({ setIsSubmitted }) => {
 
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedCountryCode, setSelectedCountryCode] = useState(""); // State for selected country code
+  const [selectedCountryCode, setSelectedCountryCode] = useState("");
 
   //Mobile Number Validation//
   const [selectedCountry, setSelectedCountry] = useState(null);
@@ -44,7 +45,7 @@ const SignUp = ({ setIsSubmitted }) => {
 
   const countryOptions = countries.map((country) => ({
     value: country.code,
-    label: `(+${country.phone})`,
+    label: `(+${country.phone}) ${country.label}`,
     country,
   }));
   //******/
@@ -115,7 +116,6 @@ const SignUp = ({ setIsSubmitted }) => {
   };
   //******/
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     let newValue = value.trimStart();
@@ -140,7 +140,7 @@ const SignUp = ({ setIsSubmitted }) => {
     }
 
     if (name === "passportNumber") {
-      const regex = /^[A-Z][0-9]{7}$/; 
+      const regex = /^[A-Z][0-9]{7}$/;
       const maxLength = 8;
 
       if (!value) {
@@ -194,7 +194,10 @@ const SignUp = ({ setIsSubmitted }) => {
       setCharCount(value.length);
     }
 
-    if (name === "nationalIdNum" && formData.nationalIdType === "Aadhaar Card") {
+    if (
+      name === "nationalIdNum" &&
+      formData.nationalIdType === "Aadhaar Card"
+    ) {
       // Check if the value is numeric and does not exceed 12 digits
       if (!/^\d*$/.test(value) || value.length > 12) {
         return; // Prevent any non-numeric input
@@ -203,7 +206,6 @@ const SignUp = ({ setIsSubmitted }) => {
 
     // Update the form data
     setFormData((prev) => ({ ...prev, [name]: newValue }));
-
   };
 
   const handleNameChar = (e) => {
@@ -236,7 +238,7 @@ const SignUp = ({ setIsSubmitted }) => {
       ...prevData,
       file,
     }));
-    setErrors((prevErrors) => ({ ...prevErrors, file: "" })); // Clear file error if any
+    setErrors((prevErrors) => ({ ...prevErrors, file: "" }));
   };
 
   const validate = () => {
@@ -274,7 +276,8 @@ const SignUp = ({ setIsSubmitted }) => {
     //DOB
     if (!formData.dob) newErrors.dob = "Date of Birth is required";
     //sub are req
-    if (!formData.subjectsYouAreExpertAt.trim()) newErrors.subjectsYouAreExpertAt = "Subject is required";
+    if (!formData.subjectsYouAreExpertAt.trim())
+      newErrors.subjectsYouAreExpertAt = "Subject is required";
     //Mode of teaching
     if (!formData.modeOfTeaching)
       newErrors.modeOfTeaching = "Mode of teaching is required";
@@ -337,7 +340,6 @@ const SignUp = ({ setIsSubmitted }) => {
     return newErrors;
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -376,11 +378,9 @@ const SignUp = ({ setIsSubmitted }) => {
           "http://192.168.0.109:8080/tution-application/tutor/create",
           formDataToSend,
           {
-            
-              headers: {
-                "Content-Type": "application/json", // Send as JSON
-              },
-            
+            headers: {
+              "Content-Type": "application/json", // Send as JSON
+            },
           }
         );
 
@@ -403,6 +403,8 @@ const SignUp = ({ setIsSubmitted }) => {
     e.preventDefault(); // Prevents the form's default behavior
     handleSubmit(e);
   };
+
+  const [availableTimings, setTimings] = useState([]);
 
   const generateTimings = () => {
     const timings = [];
@@ -444,11 +446,12 @@ const SignUp = ({ setIsSubmitted }) => {
     const formattedMinute = minute < 10 ? `0${minute}` : minute; // Add leading zero for minutes
     return `${formattedHour}:${formattedMinute} ${amPm}`; // Return in HH:mm AM/PM format
   };
-
-  // Usage in the component
-  const availableTimings = useMemo(() => generateTimings(), []);
-
-  console.log(availableTimings);
+  // useEffect to set the generated timings on component mount
+  useEffect(() => {
+    const availableTimings = generateTimings();
+    setTimings(availableTimings);
+    console.log(availableTimings); // To log the available timings in IST format
+  }, []);
 
   return (
     <div className="max-w-3xl sm-640px mx-auto mt-10 p-10 bg-white border border-gray-300 rounded-lg shadow-lg">
@@ -464,7 +467,7 @@ const SignUp = ({ setIsSubmitted }) => {
             </label>
             <input
               type="text"
-              id="firstname"
+              id="firstName"
               minLength={3}
               maxLength={20}
               name="firstName"
@@ -486,7 +489,7 @@ const SignUp = ({ setIsSubmitted }) => {
             </label>
             <input
               type="text"
-              id="lastname"
+              id="lastName"
               minLength={3}
               maxLength={20}
               name="lastName"
@@ -526,6 +529,7 @@ const SignUp = ({ setIsSubmitted }) => {
               <span className="text-red-500 text-sm">{errors.emailId}</span>
             )}
           </div>
+
           <div className="w-full pl-3 mt-2 mb-4">
             <label className="text-sm font-medium text-gray-700 float-start">
               Mobile Number:
@@ -533,12 +537,18 @@ const SignUp = ({ setIsSubmitted }) => {
             <div className="flex float-start w-full">
               <Select
                 name="countryCode"
-              
+                 id="mobileNumber"
                 options={countryOptions}
                 onChange={(selectedOption) => {
                   setSelectedCountry(selectedOption.country);
-                  setPersonInfo({ ...personInfo, countryCode: `+${selectedOption.country.phone}` });
-        setFormData({ ...formData, countryCode: `+${selectedOption.country.phone}` });
+                  setPersonInfo({
+                    ...personInfo,
+                    countryCode: `+${selectedOption.country.phone}`,
+                  });
+                  setFormData({
+                    ...formData,
+                    countryCode: `+${selectedOption.country.phone}`,
+                  });
                 }}
                 value={
                   selectedCountry
@@ -663,6 +673,7 @@ const SignUp = ({ setIsSubmitted }) => {
             </label>
             <input
               type="date"
+              id="dob"
               name="dob"
               value={formData.dob}
               onChange={handleChange}
@@ -720,7 +731,7 @@ const SignUp = ({ setIsSubmitted }) => {
               Subjects You Are Expert At:
             </label>
             <textarea
-              name="subjectsYouAreExpertAt"
+              name="subjectsLookingFor"
               value={formData.subjectsYouAreExpertAt}
               onChange={handleChange}
               placeholder="Enter Subjects You are expert at"
@@ -729,7 +740,9 @@ const SignUp = ({ setIsSubmitted }) => {
               } h-10`}
             />
             {errors.subjectsYouAreExpertAt && (
-              <span className="text-red-500 text-sm">{errors.subjectsYouAreExpertAt}</span>
+              <span className="text-red-500 text-sm">
+                {errors.subjectsYouAreExpertAt}
+              </span>
             )}
           </div>
           <div className="w-1/2 pl-3">
@@ -781,14 +794,16 @@ const SignUp = ({ setIsSubmitted }) => {
             )}
           </div>
           <div className="w-1/2 pl-3">
-            <label className="block mb-2 text-sm font-medium text-gray-700 float-start">
-              Available Time Slots:
+            <label className="float-start text-sm font-medium text-gray-700">
+              Available Time slots
             </label>
             <select
               name="availableTimings"
               value={formData.availableTimings}
               onChange={handleChange}
-              className={`w-full px-4 py-2 border border-gray-500 outline-none`}
+              className={`w-[300px] py-1.5 border border-gray-500 outline-none  ${
+                errors.availableTimings ? "border-red-500" : ""
+              }`}
             >
               <option value="">Select Available Timing</option>
               {availableTimings.map((timing, index) => (
@@ -843,7 +858,9 @@ const SignUp = ({ setIsSubmitted }) => {
               <option value="Passport Number">Passport Number</option>
             </select>
             {errors.nationalIdType && (
-              <span className="text-red-500 text-sm">{errors.nationalIdType}</span>
+              <span className="text-red-500 text-sm">
+                {errors.nationalIdType}
+              </span>
             )}
           </div>
         </div>
@@ -871,7 +888,9 @@ const SignUp = ({ setIsSubmitted }) => {
                       : formData.passportNumber
                   }
                   onChange={handleChange}
-                  maxLength={formData.nationalIdType === "Aadhaar Card" ? 12 : 8}
+                  maxLength={
+                    formData.nationalIdType === "Aadhaar Card" ? 12 : 8
+                  }
                   className={`w-full px-4 py-2 border border-gray-500 outline-none ${
                     formData.nationalIdType === "Aadhaar Card" &&
                     errors.nationalIdNum

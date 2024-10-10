@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Header from './Header';
 
 const Login = () => {
+  const navigate = useNavigate(); // Hook to programmatically navigate
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -10,19 +12,16 @@ const Login = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  // Email validation
   const validateEmail = (input) => {
     const emailPattern = /^[a-z0-9._%+-]+@[a-z.-]+\.(com|net|org|in|edu|gov|mil|co|us|info)$/;
-    return emailPattern.test(input) &&  !/^\d[0-5]/.test(input);
+    return emailPattern.test(input) && !/^\d[0-5]/.test(input);
   };
 
-  // Phone number validation: must not start with 0-5
   const validatePhoneNumber = (input) => {
-    const phonePattern = /^[6-9]\d{9}$/; // Starts with 6-9 and followed by 9 digits
+    const phonePattern = /^[6-9]\d{9}$/;
     return phonePattern.test(input);
   };
 
-  // Password validation
   const validatePassword = (input) => {
     const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&*+#^=])[A-Za-z\d@$!%?&*+#^=]{8,}$/;
     return passwordPattern.test(input);
@@ -34,7 +33,6 @@ const Login = () => {
 
     const trimmedEmail = email.trim();
 
-    // Validate email or phone number
     if (!validateEmail(trimmedEmail) && !validatePhoneNumber(trimmedEmail)) {
       setEmailError('Please enter a valid email or a 10-digit phone number.');
       isValid = false;
@@ -42,7 +40,6 @@ const Login = () => {
       setEmailError('');
     }
 
-    // Validate password
     if (!validatePassword(password)) {
       setPasswordError('Password must be 8 characters with upper, lower, number and special character.');
       isValid = false;
@@ -59,6 +56,10 @@ const Login = () => {
         setSuccessMessage('');
       }, 2000);
 
+      // Redirect to admin page on successful login
+      navigate('/admin');
+
+      // Clear fields after submission
       setEmail('');
       setPassword('');
     }
@@ -66,12 +67,10 @@ const Login = () => {
 
   const handleEmailChange = (e) => {
     const value = e.target.value;
-    // Remove spaces and uppercase characters
     const formattedValue = value.replace(/\s+/g, '').replace(/[A-Z]/g, '');
     
-    // Prevent starting with 0-5 for phone number input
     if (/^[0-5]/.test(formattedValue)) {
-      return; // Disallow input if it starts with 0-5
+      return;
     }
 
     setEmail(formattedValue);
@@ -82,8 +81,9 @@ const Login = () => {
   };
 
   return (
+    <>
+    <Header/>
     <div className="relative flex items-center justify-center min-h-screen bg-gray-100">
-      {/* {/ Success message popup /} */}
       {successMessage && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-20">
           <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -101,8 +101,7 @@ const Login = () => {
               type="text"
               id="email"
               value={email}
-              maxLength={validatePhoneNumber(email)
- ? 10 : 30}
+              maxLength={validatePhoneNumber(email) ? 10 : 30}
               onChange={handleEmailChange}
               className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm sm:text-sm ${emailError ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
               aria-invalid={!!emailError}
@@ -117,7 +116,8 @@ const Login = () => {
               type={showPassword ? 'text' : 'password'}
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value.slice(0,8))}
+              maxLength='8'
+              onChange={(e) => setPassword(e.target.value)}
               required
               className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm sm:text-sm ${passwordError ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 pr-10`}
               aria-invalid={!!passwordError}
@@ -138,7 +138,7 @@ const Login = () => {
           </div>
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md shadow-sm hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-transform transform hover:scale-105 mt-5"
+            className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-transform transform hover:scale-105 mt-5"
           >
             Login
           </button>
@@ -146,18 +146,12 @@ const Login = () => {
         <div className="text-center mt-6">
           <p className="text-sm text-gray-600">
             Don't Have An Account?{' '}
-            <Link to="/student" className="text-blue-500 hover:text-blue-500 font-medium underline p-3">S/Register</Link>
-            <Link to="/tutor" className="text-blue-500 hover:text-blue-500 font-medium underline">T/Register</Link>
-            <Link to="/studentuser" className="text-blue-500 hover:text-blue-500 font-medium underline p-3">Student/tutor</Link>
-            <Link to="/createpassword" className="text-blue-500 hover:text-blue-500 font-medium underline">Createpassword</Link>
-            {/* <Link to="/saikumar" className="text-blue-500 hover:text-blue-500 font-medium underline">Saikumar</Link> */}
-            {/* <Link to="/tutorpage" className="text-blue-500 hover:text-blue-500 font-medium underline ml-3">Admin</Link> */}
-            {/* <Link to="/homepage" className="text-blue-500 hover:text-blue-500 font-medium underline ml-3">Homepage</Link> */}
-            <Link to="/tutordashboard" className="text-blue-500 hover:text-blue-500 font-medium underline ml-3">Tutordashboard</Link>
+            <Link to="/register" className="text-blue-500 hover:text-blue-500 font-medium underline">Register</Link>
           </p>
         </div>
       </div>
     </div>
+    </>
   );
 };
 
