@@ -6,18 +6,18 @@ const Saikumar = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [popup, setPopup] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    subject: '',
+    firstName: '',
+    subjectsLookingFor: '',
     modeOfTeaching: '',
     location: '',
-    timing: ''
+    availableTimings: ''
   });
   const [data, setData] = useState({
-    name: '',
-    subject: '',
+    firstName: '',
+    subjectsLookingFor: '',
     modeOfClass: '',
     location: '',
-    timing: ''
+    availableTimings: ''
   });
   const [errors, setErrors] = useState({});
   const [posts, setPosts] = useState([]); // State for storing submitted posts
@@ -61,15 +61,15 @@ const Saikumar = () => {
     const nameRegex = /^[A-Za-z\s]+$/;
     const subjectRegex = /^[A-Za-z0-9\s,]+$/;
 
-    if (!formData.name) newErrors.name = 'Name is required';
-    else if (!nameRegex.test(formData.name)) newErrors.name = 'Name can only contain letters and spaces';
+    if (!formData.firstName) newErrors.firstName = 'Name is required';
+    else if (!nameRegex.test(formData.firstName)) newErrors.firstName = 'Name can only contain letters and spaces';
 
-    if (!formData.subject) newErrors.subject = 'Subject is required';
-    else if (!subjectRegex.test(formData.subject)) newErrors.subject = 'Subject can only contain letters, numbers, spaces, and special characters like ,';
+    if (!formData.subjectsLookingFor) newErrors.subjectsLookingFor = 'Subject is required';
+    else if (!subjectRegex.test(formData.subjectsLookingFor)) newErrors.subjectsLookingFor = 'Subject can only contain letters, numbers, spaces, and special characters like ,';
 
     if (!formData.location) newErrors.location = 'Location is required';
     if (!formData.modeOfTeaching) newErrors.modeOfTeaching = 'Mode of teaching is required';
-    if (!formData.timing) newErrors.timing = 'Timing is required';
+    if (!formData.availableTimings) newErrors.availableTimings = 'Timing is required';
 
     return newErrors;
   };
@@ -79,15 +79,15 @@ const Saikumar = () => {
     const nameRegex = /^[A-Za-z\s]+$/;
     const subjectRegex = /^[A-Za-z0-9\s,]+$/;
 
-    if (!data.name) newErrors.name = 'Name is required';
-    else if (!nameRegex.test(data.name)) newErrors.name = 'Name can only contain letters and spaces';
+    if (!data.firstName) newErrors.firstName = 'Name is required';
+    else if (!nameRegex.test(data.firstName)) newErrors.firstName = 'Name can only contain letters and spaces';
 
-    if (!data.subject) newErrors.subject = 'Subject is required';
-    else if (!subjectRegex.test(data.subject)) newErrors.subject = 'Subject can only contain letters, numbers, spaces, and special characters like ,';
+    if (!data.subjectsLookingFor) newErrors.subjectsLookingFor = 'Subject is required';
+    else if (!subjectRegex.test(data.subjectsLookingFor)) newErrors.subjectsLookingFor = 'Subject can only contain letters, numbers, spaces, and special characters like ,';
 
     if (!data.location) newErrors.location = 'Location is required';
     if (!data.modeOfClass) newErrors.modeOfClass = 'Mode of class is required';
-    if (!data.timing) newErrors.timing = 'Timing is required';
+    if (!data.availableTimings) newErrors.availableTimings = 'Timing is required';
 
     return newErrors;
   };
@@ -103,7 +103,7 @@ const Saikumar = () => {
       };
       setPosts((prevPosts) => [...prevPosts, newPost]);
    
-      setFormData({ name: '', subject: '', modeOfTeaching: '', location: '', timing: '' }); // Reset form
+      setFormData({ firstName: '', subjectsLookingFor: '', modeOfTeaching: '', location: '', timing: '' }); // Reset form
       toggleStudentPopup();
     }
   };
@@ -118,9 +118,9 @@ const Saikumar = () => {
         ...data
       };
       setPosts((prevPosts) => [...prevPosts, newTutorPost]);
-      alert(`Applied with details:\nName: ${data.name}\nSubject: ${data.subject}\nMode of Class: ${data.modeOfClass}\nLocation: ${data.location}\nTiming: ${data.timing}`);
+      alert(`Applied with details:\nName: ${data.firstName}\nSubject: ${data.subjectsLookingFor}\nMode of Class: ${data.modeOfClass}\nLocation: ${data.location}\nTiming: ${data.timing}`);
       console.log(data);
-      setData({ name: '', subject: '', modeOfClass: '', location: '', timing: '' }); // Reset form
+      setData({ firstName: '', subject: '', modeOfClass: '', location: '', timing: '' }); // Reset form
       toggleTutorPopup();
     }
   };
@@ -152,14 +152,14 @@ const Saikumar = () => {
                   <input
                     type='text'
                     id="firstName"
-                    name='firstName'
+                    // name='firstName'
                     maxLength='30'
-                    placeholder='name'
-                    className={`border-2 border-black w-full p-2 ${errors.name ? 'border-red-500' : ''}`}
-                    value={formData.name}
+                    placeholder='firstName' 
+                    className={`border-2 border-black w-full p-2 ${errors.firstName ? 'border-red-500' : ''}`}
+                    value={formData.firstName}
                     onChange={handleInputChange}
                   />
-                  {errors.name && <p className='text-red-500 text-sm'>{errors.name}</p>}
+                  {errors.firstName && <p className='text-red-500 text-sm'>{errors.firstName}</p>}
                 </div>
 
                 <div>
@@ -170,11 +170,11 @@ const Saikumar = () => {
                     name='subjectsLookingFor'
                     maxLength='30'
                     placeholder='subject'
-                    className={`border-2 border-black w-full p-2 ${errors.subject ? 'border-red-500' : ''}`}
-                    value={formData.subject}
+                    className={`border-2 border-black w-full p-2 ${errors.subjectsLookingFor ? 'border-red-500' : ''}`}
+                    value={formData.subjectsLookingFor}
                     onChange={handleInputChange}
                   />
-                  {errors.subject && <p className='text-red-500 text-sm'>{errors.subject}</p>}
+                  {errors.subjectsLookingFor && <p className='text-red-500 text-sm'>{errors.subjectsLookingFor}</p>}
                 </div>
 
                 <div>
@@ -201,11 +201,11 @@ const Saikumar = () => {
                     id='availableTimings'
                     name='availableTimings'
                     placeholder='timing'
-                    className={`border-2 border-black w-full p-2 ${errors.timing ? 'border-red-500' : ''}`}
-                    value={formData.timing}
+                    className={`border-2 border-black w-full p-2 ${errors.availableTimings ? 'border-red-500' : ''}`}
+                    value={formData.availableTimings}
                     onChange={handleInputChange}
                   />
-                  {errors.timing && <p className='text-red-500 text-sm'>{errors.timing}</p>}
+                  {errors.availableTimings && <p className='text-red-500 text-sm'>{errors.availableTimings}</p>}
                 </div>
 
                 <div>
@@ -243,11 +243,11 @@ const Saikumar = () => {
                     name='firstName'
                     maxLength='30'
                     placeholder='name'
-                    className={`border-2 border-black w-full p-2 ${errors.name ? 'border-red-500' : ''}`}
-                    value={data.name}
+                    className={`border-2 border-black w-full p-2 ${errors.firstName ? 'border-red-500' : ''}`}
+                    value={data.firstName}
                     onChange={handleChange}
                   />
-                  {errors.name && <p className='text-red-500 text-sm'>{errors.name}</p>}
+                  {errors.firstName && <p className='text-red-500 text-sm'>{errors.firstName}</p>}
                 </div>
 
                 <div>
