@@ -300,7 +300,7 @@ const Student = ({ setIsSubmitted }) => {
     }
   };
 
-  const [errorMsg, setErrorMsg] = useState("");
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
