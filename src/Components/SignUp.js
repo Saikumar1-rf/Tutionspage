@@ -4,7 +4,7 @@ import { countries } from "./countries";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-const SignUp = ({ setIsSubmitted }) => {
+const SignUp = ({ isSubmitted }) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -386,7 +386,7 @@ const SignUp = ({ setIsSubmitted }) => {
         console.log("Form submitted successfully", response.data);
 
         // If successful, set the submission state and navigate to success page
-        setIsSubmitted(true);
+        isSubmitted(true);
         navigate("/success");
       } catch (error) {
         // Handle error

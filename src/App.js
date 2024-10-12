@@ -28,6 +28,7 @@ function App() {
 
     <>
     <div className="App">
+    {isSubmitted && <p>Form Submitted Successfully!</p>}
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
