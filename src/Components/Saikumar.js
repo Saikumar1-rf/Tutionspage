@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import Homepage from './Homepage';
+import Home from './Home';
+
 
 
 const Saikumar = () => {
@@ -314,6 +316,8 @@ const Saikumar = () => {
           </div>
         )}
       </div>
+
+      <Home posts={posts} />
     </>
   );
 };

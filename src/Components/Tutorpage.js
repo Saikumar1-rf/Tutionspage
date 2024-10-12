@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import Homepage from './Homepage';
 
 const Tutorpage = () => {
   const [tutors, setTutors] = useState([
@@ -33,7 +34,7 @@ const Tutorpage = () => {
 
   return (
     <>
-    
+    {/* <Homepage/> */}
     <div className="flex flex-col items-center mt-[10px]">
       <div className='border-1 shadow-md hover:bg-slate-500 border-black rounded-lg h-14 w-20 flex mr-[-80%] justify-center p-4 bg-blue-600 text-white'>
         <Link to='/saikumar'><button className='border-none rounded-xl'>CreatePost</button></Link>  
