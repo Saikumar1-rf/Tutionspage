@@ -1,9 +1,9 @@
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Routes, Route} from "react-router-dom";
 import Login from "./Components/Login"; 
 import ForgotPassword from "./Components/Forgotpassword"; 
 import Student from "./Components/Student"; 
 import SignUp from "./Components/SignUp"; 
-import Successfull from "./Components/Successfull"; 
+
 import Tutorpage from "./Components/Tutorpage";
 import React, { useState } from 'react'; 
 import "./App.css";
@@ -16,7 +16,7 @@ import About from "./Components/About";
 import Home from "./Components/Home";
 import Carrers from "./Components/Carrers";
 import Payment from "./Components/Payment";
-import Header from "./Components/Header";
+
 
 
 
@@ -27,17 +27,13 @@ function App() {
   return (
 
     <>
-    {/* <Homepage/> */}
-    
     <div className="App">
       <Routes>
         <Route path="/" element={<Login />} />
-        {/* <Route path="/"element={<Successfull/>}></Route> */}
         <Route path="/login" element={<Login />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/student" element={<Student />} />
-        <Route path="/signuptutor" element={<SignUp setIsSubmitted={setIsSubmitted} />} />
-        {/* <Route path="/success" element={<Successfull isSubmitted={isSubmitted} />} /> */}
+        <Route path="/signuptutor" element={<SignUp isSubmitted={setIsSubmitted} />} />
         <Route path="/admin" element={<Tutorpage />} />
         <Route path="/saikumar" element={<Saikumar/>} />
         <Route path="/studentuser" element={<Studentuser />} />

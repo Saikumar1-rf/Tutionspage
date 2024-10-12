@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Homepage from './Homepage';
-import Home from './Home'; // Import the Home component
+
 
 const Saikumar = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -314,8 +314,6 @@ const Saikumar = () => {
           </div>
         )}
       </div>
-
-      {/* <Home posts={posts} /> */}
     </>
   );
 };

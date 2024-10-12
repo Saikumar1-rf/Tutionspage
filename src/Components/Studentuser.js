@@ -118,15 +118,6 @@ const User = () => {
   return (
     <div className="h-screen flex flex-col">
       <header className="bg-teal-400 flex items-center h-14 justify-between px-10 py-2">
-        {/* <div className="relative flex items-center">
-          <FaSearch className="absolute left-4 text-gray-500" />
-
-          <input
-            type="text"
-            placeholder="Search..."
-            className="p-2 rounded-full shadow-lg px-10 w-[300px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500"
-          />
-        </div> */}
         <div className="flex items-center space-x-2">
           <FaUserAlt className="text-gray-950 w-4 h-4" />
           <span className="text-gray-700">Personal</span>

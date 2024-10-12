@@ -44,10 +44,6 @@ const Forgotpass = () => {
   }, [otp, timer]);
 
   const validateEmailId = (emailId) => {
-      //  const emailRegex = /^[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@[a-zA-Z]+\.[a-zA-Z]{2,}(\.com)?$/;
-      // const emailRegex=/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        //  const emailRegex=/^[a-z0-9]+(\.[a-z0-9]+)*@[a-z]{2,}(\.com||\.in)$/;/^[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail||yahoo||org||outlook||hotmail||example||sai)\.(com||net||org||in||edu||gov||mil||co||us||info||org\.in)$/;const emailRegex = /^(?!\d)[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail|yahoo|org|outlook|hotmail|example|sai)\.(com|net|org|in|edu|gov|mil|co\.in|us|info|org\.in)$/;
-// const emailRegex=/^(?!\d)[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail||yahoo||org||outlook||hotmail||example||sai)\.(com|net|org|in||edu||gov||mil||us||info||org\.in)$/;
    const emailIdRegex = /^(?!\d)[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*@(gmail|yahoo|outlook|hotmail|example|sai)\.(com|net|org|in|edu|gov|mil|us|info|org\.in)$/;
       return emailIdRegex.test(emailId) && !/\s/.test(emailId); // Ensure no spaces are present
   };
@@ -128,10 +124,9 @@ const Forgotpass = () => {
     } else {
       setErrors({});
       alert("Successfully verified otp!");//show alert on successfull otp verification
-      // console.log("OTP Verified: ", otpValue);
-      // Simulate successful OTP verification
+    
       setOtp(false); //hide otp input and resend button
-      // setShowSuccessPopup(true);
+      
       setShowMessage(true);
     }
   };

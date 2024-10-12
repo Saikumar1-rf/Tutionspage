@@ -692,7 +692,6 @@ const Student = ({ setIsSubmitted }) => {
               id="dob"
               name="dob"
               value={formData.dob}
-              // max={new Date().toISOString().split("T")[0]}
               max={
                 new Date(
                   new Date().setFullYear(new Date().getFullYear() - 4) - 1
