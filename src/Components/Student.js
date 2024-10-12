@@ -967,13 +967,6 @@ const Student = ({ setIsSubmitted }) => {
           </div>
         </div>
       </form>
-
-       {/* Display error message */}
-       {errorMsg && (
-        <div className="text-red-500 text-center mt-4">
-          {errorMsg}
-        </div>
-        )}
     </div>
   );
 };
