@@ -154,7 +154,7 @@ const Student = ({ setIsSubmitted }) => {
     const availableTimings = generateTimings();
     setTimings(availableTimings);
     console.log(availableTimings); // To log the available timings in IST format
-  }, [generateTimings]);
+  }, []);
 
   //Date of Birth
   const isLeapYear = (year) => {
@@ -299,6 +299,8 @@ const Student = ({ setIsSubmitted }) => {
       e.preventDefault();
     }
   };
+
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -965,6 +967,13 @@ const Student = ({ setIsSubmitted }) => {
           </div>
         </div>
       </form>
+
+       {/* Display error message */}
+       {errorMsg && (
+        <div className="text-red-500 text-center mt-4">
+          {errorMsg}
+        </div>
+        )}
     </div>
   );
 };

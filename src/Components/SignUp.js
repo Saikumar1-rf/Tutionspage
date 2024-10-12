@@ -406,53 +406,56 @@ const SignUp = () => {
   };
 
   const [availableTimings, setTimings] = useState([]);
+ // Format time function
+ const formatTime = (hour, minute) => {
+  const amPm = hour < 12 || hour === 24 ? "AM" : "PM"; // Handle AM/PM correctly
+  const formattedHour = hour % 12 || 12; // Convert 0 and 24 hour to 12 for display
+  const formattedMinute = minute < 10 ? `0${minute}` : minute; // Add leading zero for minutes
+  return `${formattedHour}:${formattedMinute} ${amPm}`; // Return in HH:mm AM/PM format
+};
 
-  const generateTimings = () => {
-    const timings = [];
-    const startHour = 0; // 00:00 (12 AM in 24-hour format)
-    const endHour = 23; // 23:00 (11 PM in 24-hour format)
-    const interval = 45; // 45 minutes
+// Define generateTimings with useCallback
+const generateTimings = useCallback(() => {
+  const timings = [];
+  const startHour = 0; // 00:00 (12 AM in 24-hour format)
+  const endHour = 23; // 23:00 (11 PM in 24-hour format)
+  const interval = 45; // 45 minutes  
 
-    let hour = startHour;
-    let minute = 0;
+  let hour = startHour;
+  let minute = 0;
 
-    while (hour < endHour || (hour === endHour && minute === 15)) {
-      const startTime = formatTime(hour, minute);
+  while (hour < endHour || (hour === endHour && minute === 15)) {
+    const startTime = formatTime(hour, minute);
 
-      // Increment time by 45 minutes to get the end time of the slot
-      let endHour = hour;
-      let endMinute = minute + interval;
+    // Increment time by 45 minutes to get the end time of the slot
+    let endHour = hour;
+    let endMinute = minute + interval;
 
-      if (endMinute >= 60) {
-        endMinute -= 60;
-        endHour++;
-      }
-
-      const endTime = formatTime(endHour, endMinute);
-      timings.push(`${startTime} to ${endTime} IST`);
-
-      // Update the current time for the next slot
-      minute += interval;
-      if (minute >= 60) {
-        minute -= 60; // Reset minutes and increment hour
-        hour++;
-      }
+    if (endMinute >= 60) {
+      endMinute -= 60;
+      endHour++;
     }
 
-    return timings;
-  };
-  const formatTime = (hour, minute) => {
-    const amPm = hour < 12 || hour === 24 ? "AM" : "PM"; // Handle AM/PM correctly
-    const formattedHour = hour % 12 || 12; // Convert 0 and 24 hour to 12 for display
-    const formattedMinute = minute < 10 ? `0${minute}` : minute; // Add leading zero for minutes
-    return `${formattedHour}:${formattedMinute} ${amPm}`; // Return in HH:mm AM/PM format
-  };
-  // useEffect to set the generated timings on component mount
-  useEffect(() => {
-    const availableTimings = generateTimings();
-    setTimings(availableTimings);
-    console.log(availableTimings); // To log the available timings in IST format
-  }, []);
+    const endTime = formatTime(endHour, endMinute);
+    timings.push(`${startTime} to ${endTime} IST`);
+
+    // Update the current time for the next slot
+    minute += interval;
+    if (minute >= 60) {
+      minute -= 60; // Reset minutes and increment hour
+      hour++;
+    }
+  }
+
+  return timings;
+}, []); // No dependencies, meaning it will not change unless the component is remounted
+
+// useEffect to set the generated timings on component mount
+useEffect(() => {
+  const availableTimings = generateTimings();
+  setTimings(availableTimings);
+  console.log(availableTimings); // To log the available timings in IST format
+}, [generateTimings]); // Call the function whenever it changes (if it ever does)
 
   return (
     <div className="max-w-3xl sm-640px mx-auto mt-10 p-10 bg-white border border-gray-300 rounded-lg shadow-lg">
