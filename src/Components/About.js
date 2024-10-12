@@ -1,5 +1,4 @@
 import React from 'react';
-import Homepage from './Homepage';
 import virtual from '../assets/onlineclass.avif';
 import home from '../assets/homeclass.jpg'
 import teacher from '../assets/teachermode.jpg';

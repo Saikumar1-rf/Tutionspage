@@ -28,7 +28,6 @@ const SignUp = ({ setIsSubmitted }) => {
 
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedCountryCode, setSelectedCountryCode] = useState("");
 
   //Mobile Number Validation//
   const [selectedCountry, setSelectedCountry] = useState(null);
@@ -290,8 +289,7 @@ const SignUp = ({ setIsSubmitted }) => {
     if (!formData.nationalIdType)
       newErrors.nationalIdType = "Government ID Proof is required";
     // Validate Highest Qualification
-    const qualificationRegex =
-      /^[A-Za-z0-9\s!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/;
+    const qualificationRegex = /^[A-Za-z0-9\s!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/;
 
     if (!formData.highestQualification.trim()) {
       newErrors.highestQualification = "Highest qualification is required";
