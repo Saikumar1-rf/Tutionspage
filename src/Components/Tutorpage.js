@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Homepage from './Homepage';
+
 
 const Tutorpage = () => {
-  const [tutors, setTutors] = useState([
+  const [tutors] = useState([
     { name: 'Saikumar', subject: 'Maths', mode: 'Student Mode', email: 'saikumar@gmail.com', timings: '2:00 AM' },
     { name: 'Sai', subject: 'Social', mode: 'Virtual Mode', email: 'dashboard@gmail.com', timings: '3:00 AM' },
     { name: 'Reddy', subject: 'Science', mode: 'Tutor Mode', email: 'reddy@gmail.com', timings: '4:00 AM' },
@@ -11,7 +11,7 @@ const Tutorpage = () => {
     { name: 'Saikumar', subject: 'Maths', mode: 'Saikumar ka Salaar', email: 'saikumar@gmail.com', timings: '2:00 AM' },
   ]);
 
-  const [students, setStudents] = useState([
+  const [students] = useState([
     { name: 'Lakshman', subject: 'Maths', mode: 'Student Mode', email: 'saikumar@gmail.com', timings: '2:00 AM' },
     { name: 'Saikiran', subject: 'Social', mode: 'Virtual Mode', email: 'dashboard@gmail.com', timings: '3:00 AM' },
     { name: 'Roshini', subject: 'Science', mode: 'Tutor Mode', email: 'reddy@gmail.com', timings: '1:00 PM' },

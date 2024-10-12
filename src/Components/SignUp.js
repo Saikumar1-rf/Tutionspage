@@ -4,7 +4,7 @@ import { countries } from "./countries";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-const SignUp = ({ isSubmitted }) => {
+const SignUp = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -20,7 +20,7 @@ const SignUp = ({ isSubmitted }) => {
     nationalIdType: "",
     nationalIdNum: "",
     passportNumber: "",
-    // file: null,
+ 
     chargesPerHour: "",
     availableTimings: "",
     category: "",
@@ -56,7 +56,7 @@ const SignUp = ({ isSubmitted }) => {
     file: "",
   });
 
-  const [charCount, setCharCount] = useState(0);
+  // const [charCount, setCharCount] = useState(0);
   //Location Validation//
   const [isLocationDetected, setIsLocationDetected] = useState(false); // Prevent multiple detections
 
@@ -189,9 +189,9 @@ const SignUp = ({ isSubmitted }) => {
       }
     }
 
-    if (name === "subject") {
-      setCharCount(value.length);
-    }
+    // if (name === "subject") {
+    //   setCharCount(value.length);
+    // }
 
     if (
       name === "nationalIdNum" &&
@@ -289,7 +289,8 @@ const SignUp = ({ isSubmitted }) => {
     if (!formData.nationalIdType)
       newErrors.nationalIdType = "Government ID Proof is required";
     // Validate Highest Qualification
-    const qualificationRegex = /^[A-Za-z0-9\s!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/;
+    const qualificationRegex =/^[A-Za-z0-9\s!@#$%^&*()_+\-=[]{};':"\\|,.<>?]+$/;
+    ;
 
     if (!formData.highestQualification.trim()) {
       newErrors.highestQualification = "Highest qualification is required";
@@ -340,6 +341,7 @@ const SignUp = ({ isSubmitted }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     const newErrors = validate();
     if (Object.keys(newErrors).length === 0) {
@@ -386,7 +388,7 @@ const SignUp = ({ isSubmitted }) => {
         console.log("Form submitted successfully", response.data);
 
         // If successful, set the submission state and navigate to success page
-        isSubmitted(true);
+        // isSubmitted(true);
         navigate("/success");
       } catch (error) {
         // Handle error
@@ -394,6 +396,7 @@ const SignUp = ({ isSubmitted }) => {
       }
     } else {
       setErrors(newErrors);
+      setIsSubmitting(false);
     }
   };
 
@@ -732,6 +735,7 @@ const SignUp = ({ isSubmitted }) => {
               name="subjectsLookingFor"
               value={formData.subjectsYouAreExpertAt}
               onChange={handleChange}
+              maxLength={100}
               placeholder="Enter Subjects You are expert at"
               className={`w-full px-4 py-2 border border-gray-500 outline-none ${
                 errors.subjectsYouAreExpertAt ? "border-red-500" : ""
