@@ -3,7 +3,7 @@ import Login from "./Components/Login";
 import ForgotPassword from "./Components/Forgotpassword"; 
 import Student from "./Components/Student"; 
 import SignUp from "./Components/SignUp"; 
-
+import ResetPassword from "./Components/ResetPassword"; 
 import Tutorpage from "./Components/Tutorpage";
 import React, { useState } from 'react'; 
 import "./App.css";
@@ -27,6 +27,7 @@ function App() {
   return (
 
     <>
+    <Homepage/>
     <div className="App">
     {isSubmitted && <p>Form Submitted Successfully!</p>}
       <Routes>
@@ -45,10 +46,10 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/carrers" element={<Carrers/>} />
         <Route path="/payment"element={<Payment/>} />
+        <Route path="/resetpassword"element={<ResetPassword/>}></Route>
       </Routes>
     </div>
     </>
   );
 }
-
 export default App;

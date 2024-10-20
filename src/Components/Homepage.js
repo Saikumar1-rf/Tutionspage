@@ -35,13 +35,13 @@ const Homepage = () => {
           <ul className="flex space-x-4 text-black justify-between">
             <Link to='/home'><li className="cursor-pointer hover:text-gray-200 px-4">Home</li></Link>
            <Link to='/about'><li className="cursor-pointer hover:text-gray-200 px-4">About</li></Link> 
-          <Link to='/Carrers'><li className="cursor-pointer hover:text-gray-200 px-4">Carrers</li></Link>
-             <li className="cursor-pointer hover:text-gray-200 px-4">Contact Us</li>
+          <Link to='/carrers'><li className="cursor-pointer hover:text-gray-200 px-4">Carrers</li></Link>
+          <Link to='/contact us'><li className="cursor-pointer hover:text-gray-200 px-4">Contact us</li></Link>
           </ul>
-
           {/* Dropdown Icon for smaller screens */}
           <div className=" text-white cursor-pointer" onClick={toggleDropdown}>
-            <FaBars />
+          <Link to='login' className="border-4 border-blue-600 bg-blue-700 text-2xl rounded-3xl p-2 h-[60px] w-[5%] ">Login</Link>
+          <Link className="border-4 border-blue-600 bg-blue-700 text-2xl rounded-3xl p-2 h-[60px] w-[10%] "onClick={toggleSignUpOptions}>Register</Link>
           </div>
         </div>
 
@@ -49,22 +49,17 @@ const Homepage = () => {
         {isOpen && (
           <div className="absolute top-14 right-0 mt-2 bg-white text-black shadow-lg w-40 rounded-lg z-50">
           <ul className="space-y-2 py-2 px-4">
-            <li className="cursor-pointer hover:bg-gray-100 p-2 rounded" onClick={toggleSignUpOptions}>
-              SignUp
-            </li>
             {showSignUpOptions && (
               <>
                 <Link to="/student">
-                  <li className="cursor-pointer hover:bg-gray-100 p-2 rounded">SignUp Student</li>
+                  <li className="cursor-pointer hover:bg-gray-100 p-2 rounded">Student register</li>
                 </Link>
                 <Link to="/signuptutor">
-                  <li className="cursor-pointer hover:bg-gray-100 p-2 rounded">SignUp Tutor</li>
+                  <li className="cursor-pointer hover:bg-gray-100 p-2 rounded">Tutor register </li>
                 </Link>
               </>
             )}
-            <Link to="/login">
-              <li className="cursor-pointer hover:bg-gray-100 p-2 rounded">Login</li>
-            </Link>
+            
           </ul>
         </div>
         

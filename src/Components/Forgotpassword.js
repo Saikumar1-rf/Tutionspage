@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import axios from 'axios';
 
 const Forgotpass = () => {
-  const [inputValue, setInputValue] = useState("");
+  const [emailId, setemailId] = useState("");
   const [createPassword, setCreatePassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
@@ -51,7 +51,7 @@ const Forgotpass = () => {
   const handleEmailIdChange = (e) => {
     const value=e.target.value;
     const formattedValue = value.replace(/\s+/g, "").replace(/[A-Z]/g,'');
-    setInputValue(formattedValue);
+    setemailId(formattedValue);
   };
 
   const validatePasswords = () => {
@@ -72,9 +72,9 @@ const Forgotpass = () => {
   const handleVerify = async () => {
     let validationErrors = {};
 
-    if (!inputValue) {
+    if (!emailId) {
       validationErrors.emailId = "Input cannot be empty.";
-    } else if (!validateEmailId(inputValue)) {
+    } else if (!validateEmailId(emailId)) {
       validationErrors.emailId = "Please enter a valid email address";
     }
 
@@ -82,11 +82,12 @@ const Forgotpass = () => {
       setErrors(validationErrors);
     } else {
       setErrors({});
-      console.log("Verified: ", inputValue);
+      console.log("Verified: ", emailId);
 
       try {
-        const response = await axios.post('http://192.168.0.249:8080/tuition-application/authenticate/forgotPassword?emailId=${}', {
-          emailId: inputValue, // Send the email in the request body
+        const response = await axios.post(`https://hrms-repository-gruhabase.onrender.com/tuition-application/authenticate/forgotPassword?emailId=rsaikumar147@gmail.com`, {
+          
+          emailId: emailId, // Send the email in the request body
         });
         
         // Handle response based on your API design
@@ -105,7 +106,7 @@ const Forgotpass = () => {
 
 
   const handleResendOtp = () => {
-    console.log("OTP resent to: ", inputValue);
+    console.log("OTP resent to: ", emailId);
     setTimer(60); // Reset the timer to 60 seconds
     setCanResendOtp(false); // Disable resend button until timer runs out again
   };
@@ -124,51 +125,14 @@ const Forgotpass = () => {
     } else {
       setErrors({});
       alert("Successfully verified otp!");//show alert on successfull otp verification
-    
+      // console.log("OTP Verified: ", otpValue);
+      // Simulate successful OTP verification
       setOtp(false); //hide otp input and resend button
-      
+      // setShowSuccessPopup(true);
       setShowMessage(true);
     }
   };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const passwordErrors = validatePasswords();
-
-    const emailIdErrors = {};
-
-    // Check if the inputValue is empty
-    if (!inputValue) {
-        emailIdErrors.emailId = "EmailId is required.";
-    } else if (!validateEmailId(inputValue)) {
-        emailIdErrors.emailId = "Please enter a valid email address";
-    }
-
-    // If there are email errors, set them in the errors state
-    if (Object.keys(emailIdErrors).length > 0) {
-        setErrors((prevErrors) => ({
-            ...prevErrors,
-            ...emailIdErrors,
-        }));
-        return; // Exit early if there are errors
-    }
-
-     if (!isVerified) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        verification: "Please verify your email",
-      }));
-    } else if (Object.keys(passwordErrors).length > 0) {
-      setErrors(passwordErrors);
-    } else if (otp && otpValue.length !== 6) {
-      setErrors({ otp: "OTP is required and must be 6 digits" });
-    } else {
-      setErrors({});
-      // Show success popup
-      setShowSuccessPopup(true);
-    }
-  };
-
+  
   const handleClosePopup = () => {
     setShowSuccessPopup(false);
   };
@@ -179,17 +143,17 @@ const Forgotpass = () => {
     <h1 className="text-3xl font-bold text-center mb-6 text-blue-500">
           Forgot Password
         </h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email Input */}
+        <form className="space-y-4">
+          {/* {/ Email Input /} */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              EmailId
+              Email Id
             </label>
             <div className="flex items-center space-x-2">
               <input
                 type="text"
-                placeholder="emailId"
-                value={inputValue}
+                placeholder="email Id"
+                value={emailId}
                 maxLength="30"
                 // maxLength={validatePhoneNumber(email)  ? 10 : 30} 
                 onChange={handleEmailIdChange}
@@ -199,7 +163,7 @@ const Forgotpass = () => {
                 type="button"
                 onClick={handleVerify}
                 className="bg-blue-500 text-white py-2 px-4 rounded-2xl h-[40px] w-[70px]  focus:outline-none"
-                // disabled={!validateEmail(inputValue)}
+                // disabled={!validateEmail(emailId)}
               >
                 Verify
               </button>
@@ -212,7 +176,7 @@ const Forgotpass = () => {
             )}
           </div>
 
-          {/* OTP Input (only displayed if OTP is triggered) */}
+          {/* {/ OTP Input (only displayed if OTP is triggered) /} */}
           {otp && (
             <div>
               <label className="block text-sm font-medium text-gray-700">
@@ -238,7 +202,7 @@ const Forgotpass = () => {
               {errors.otp && (
                 <p className="text-red-500 text-sm mt-1">{errors.otp}</p>
               )}
-              {/* Timer display */}
+              {/* {/ Timer display /} */}
               {timer > 0 ? (
                 <p className="text-sm text-blue-500 mt-2">
                   Resend OTP in {timer} seconds
@@ -256,9 +220,9 @@ const Forgotpass = () => {
             </div>
           )}
 
-          {/* Password Section (only visible after otp verification) */}
+          {/* {/ Password Section (only visible after otp verification) /} */}
           {showMessage && (<>
-          {/* createPassword input */}
+          {/* {/ createPassword input /} */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Create Password
@@ -291,7 +255,7 @@ const Forgotpass = () => {
           </div>
           {createPassword && (
               <span className="space-y-2">
-                {/* Password Strength */}
+                {/* {/ Password Strength /} */}
                 <div className="flex items-center">
                   {createPassword.length >= 8 &&
                   /[A-Z]/.test(createPassword) &&
@@ -311,7 +275,7 @@ const Forgotpass = () => {
                       : " strong"}
                   </p>
                 </div>
-                {/* Length Validation */}
+                {/* {/ Length Validation /} */}
                 <div className="flex items-center">
                   {createPassword.length >= 8 ? (
                     <FaCheck className="mr-2 h-4 w-4 text-blue-500" />
@@ -321,7 +285,7 @@ const Forgotpass = () => {
                   <p>Minimum 8 characters long</p>
                 </div>
 
-                {/* Uppercase Letter Validation */}
+                {/* {/ Uppercase Letter Validation /} */}
                 <div className="flex items-center">
                   {/[A-Z]/.test(createPassword) ? (
                     <FaCheck className="mr-2 h-4 w-4 text-blue-500" />
@@ -333,7 +297,7 @@ const Forgotpass = () => {
                   </p>
                 </div>
 
-                {/* Number Validation */}
+                {/* {/ Number Validation /} */}
                 <div className="flex items-center ">
                   {/\d/.test(createPassword) ? (
                     <FaCheck className="mr-2 h-4 w-4 text-blue-500" />
@@ -343,7 +307,7 @@ const Forgotpass = () => {
                   <p>Have at least one numerical character(e.g.0-9)</p>
                 </div>
 
-                {/* Symbol Validation */}
+                {/* {/ Symbol Validation /} */}
                 <div className="flex items-center">
                   {/[!@#$%^&*(),.?":{}||<>]/.test(createPassword) ? (
                     <FaCheck className="mr-2 h-4 w-4 text-blue-500" />
@@ -357,7 +321,7 @@ const Forgotpass = () => {
               </span>
             )}
 
-          {/* Confirm Password Input */}
+          {/* {/ Confirm Password Input /} */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Confirm Password
@@ -392,7 +356,7 @@ const Forgotpass = () => {
             )}
           </div>
 
-          {/* Submit button */}
+          {/* {/ Submit button /} */}
           <button
             type="submit"
             className="w-full text-white py-2 px-4 rounded-lg bg-blue-500 focus:outline-none hover:bg-blue-500"
@@ -410,7 +374,7 @@ const Forgotpass = () => {
             )}
         </form>
 
-        {/* Success Popup */}
+        {/* {/ Success Popup /} */}
         {showSuccessPopup && (
           <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white p-6 rounded-lg shadow-lg text-center">

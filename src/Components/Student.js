@@ -183,8 +183,7 @@ const Student = ({ setIsSubmitted }) => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true); 
-
+  
     const newErrors = validate();
     if (Object.keys(newErrors).length === 0) {
       try {
@@ -212,7 +211,7 @@ const Student = ({ setIsSubmitted }) => {
   
         // Axios POST request
         const response = await axios.post(
-          "http://192.168.0.249:8080/tution-application/student/create",
+          "http://192.168.0.37:8080/tuition-application/student/create",
           formDataToSend,
           {
             headers: {
@@ -225,17 +224,16 @@ const Student = ({ setIsSubmitted }) => {
         console.log("Form submitted successfully", response.data);
   
         // If successful, set the submission state and navigate to the success page
+        console.log('navigated');
+        
+        navigate("/createpassword");
         setIsSubmitted(true);
-        navigate("/success");
       } catch (error) {
         // Handle error
         console.error("Error submitting form", error);
-      }finally{
-        setIsSubmitted(false);
       }
     } else {
       setErrors(newErrors);
-      setIsSubmitted(false);
     }
   };
   
@@ -246,38 +244,38 @@ const Student = ({ setIsSubmitted }) => {
   };
 
   //Affordability per month
-  // const handleAffordChange = (e) => {
-  //   const { name, value } = e.target;
+  const handleAffordChange = (e) => {
+    const { name, value } = e.target;
 
-  //   // Allow numeric values including decimal points
-  //   if (/^\d*\.?\d*$/.test(value) || value === "") {
-  //     const affordValue = value === "" ? "" : parseFloat(value); // Handle empty string appropriately
+    // Allow numeric values including decimal points
+    if (/^\d*\.?\d*$/.test(value) || value === "") {
+      const affordValue = value === "" ? "" : parseFloat(value); // Handle empty string appropriately
 
-  //     if (value === "0") {
-  //       setErrors((prevState) => ({
-  //         ...prevState,
-  //         affordablity: "Zero is not allowed as a valid amount.",
-  //       }));
-  //     } else {
-  //       // If valid input, update the form data as a number
-  //       setFormData((prevState) => ({
-  //         ...prevState,
-  //         [name]: affordValue,
-  //       }));
-  //       // Clear any existing errors
-  //       setErrors((prevState) => ({
-  //         ...prevState,
-  //         affordablity: "",
-  //       }));
-  //     }
-  //   } else {
-  //     // Set error if input is not a valid number
-  //     setErrors((prevState) => ({
-  //       ...prevState,
-  //       affordablity: "Only numeric values are allowed.",
-  //     }));
-  //   }
-  // };
+      if (value === "0") {
+        setErrors((prevState) => ({
+          ...prevState,
+          affordablity: "Zero is not allowed as a valid amount.",
+        }));
+      } else {
+        // If valid input, update the form data as a number
+        setFormData((prevState) => ({
+          ...prevState,
+          [name]: affordValue,
+        }));
+        // Clear any existing errors
+        setErrors((prevState) => ({
+          ...prevState,
+          affordablity: "",
+        }));
+      }
+    } else {
+      // Set error if input is not a valid number
+      setErrors((prevState) => ({
+        ...prevState,
+        affordablity: "Only numeric values are allowed.",
+      }));
+    }
+  };
 
   const handleKeyDown = (e) => {
     // Allow: backspace, delete, tab, escape, enter, arrow keys, and decimal point
@@ -299,8 +297,6 @@ const Student = ({ setIsSubmitted }) => {
       e.preventDefault();
     }
   };
-
-  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -603,7 +599,6 @@ const Student = ({ setIsSubmitted }) => {
             <div className="flex float-start">
               <Select
                 name="countryCode"
-                id="mobileNumber"
                 options={countryOptions}
                 onChange={(selectedOption) => {
                   setSelectedCountry(selectedOption.country);
@@ -698,6 +693,7 @@ const Student = ({ setIsSubmitted }) => {
               id="dob"
               name="dob"
               value={formData.dob}
+              // max={new Date().toISOString().split("T")[0]}
               max={
                 new Date(
                   new Date().setFullYear(new Date().getFullYear() - 4) - 1

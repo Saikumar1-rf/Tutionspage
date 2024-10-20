@@ -67,11 +67,9 @@ const Header = () => {
             </Link>
           </ul>
         </div>
-        
         )}
       </nav> 
       <div>
-
       </div>
     </div>
     

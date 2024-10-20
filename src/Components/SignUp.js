@@ -289,15 +289,15 @@ const SignUp = () => {
     if (!formData.nationalIdType)
       newErrors.nationalIdType = "Government ID Proof is required";
     // Validate Highest Qualification
-    const qualificationRegex =/^[A-Za-z0-9\s!@#$%^&*()_+\-=[]{};':"\\|,.<>?]+$/;
+    // const qualificationRegex =/^[A-Za-z0-9\s!@#$%^&*()_+\-=[]{};':"\\|,.<>?]+$/;
     ;
 
-    if (!formData.highestQualification.trim()) {
-      newErrors.highestQualification = "Highest qualification is required";
-    } else if (!qualificationRegex.test(formData.highestQualification)) {
-      newErrors.highestQualification =
-        "Invalid qualification format. Only letters, numbers, and special characters are allowed.";
-    }
+    // if (!formData.highestQualification.trim()) {
+    //   newErrors.highestQualification = "Highest qualification is required";
+    // } else if (!qualificationRegex.test(formData.highestQualification)) {
+    //   newErrors.highestQualification =
+    //     "Invalid qualification format. Only letters, numbers, and special characters are allowed.";
+    // }
 
     // Charges Per Hour validation
     if (!formData.chargesPerHour) {
@@ -375,7 +375,7 @@ const SignUp = () => {
         console.log("form submit", formDataToSend);
         // Axios POST request
         const response = await axios.post(
-          "http://192.168.0.109:8080/tution-application/tutor/create",
+          "http://192.168.0.120:8080/tuition-application/student/create",
           formDataToSend,
           {
             headers: {
@@ -389,7 +389,7 @@ const SignUp = () => {
 
         // If successful, set the submission state and navigate to success page
         // isSubmitted(true);
-        navigate("/success");
+        navigate("/createpassword");
       } catch (error) {
         // Handle error
         console.error("Error submitting form", error);
@@ -681,18 +681,8 @@ useEffect(() => {
               name="dob"
               value={formData.dob}
               onChange={handleChange}
-              max={
-                new Date(
-                  new Date().setFullYear(new Date().getFullYear() - 4) - 1
-                )
-                  .toISOString()
-                  .split("T")[0]
-              }
-              min={
-                new Date(new Date().setFullYear(new Date().getFullYear() - 100))
-                  .toISOString()
-                  .split("T")[0]
-              }
+              max={10}
+              min={1}
               className={`w-full px-4 py-2 border border-gray-500 outline-none  ${
                 errors.dob ? "border-red-500" : ""
               }`}
@@ -735,7 +725,8 @@ useEffect(() => {
               Subjects You Are Expert At:
             </label>
             <textarea
-              name="subjectsLookingFor"
+            id="subjectsYouAreExpertAt"
+              name="subjectsYouAreExpertAt"
               value={formData.subjectsYouAreExpertAt}
               onChange={handleChange}
               maxLength={100}

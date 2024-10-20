@@ -39,17 +39,21 @@ function Payment() {
           <i className="fas fa-lock"></i> Secure Payment Processing
         </div>
 
-        {/* Footer section for terms */}
         <div className="mt-4 text-xs text-gray-500 text-center">
-          By proceeding, you agree to our <a href="#" className="text-blue-500 hover:underline">Terms and Conditions</a>.
-        </div>
+  By proceeding, you agree to our <a href="/terms-and-conditions" className="text-blue-500 hover:underline">Terms and Conditions</a>.
+</div>
+
 
         {/* New Button Element */}
         <div className="mt-4 flex justify-center">
-          <button onClick={handleClick} style={{ cursor: 'pointer' }} className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700">
-            Click Me
-          </button>
-        </div>
+  <button
+    onClick={handleClick}
+    className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 cursor-pointer"
+  >
+    Click Me
+  </button>
+</div>
+
       </div>
     </div>
   );
