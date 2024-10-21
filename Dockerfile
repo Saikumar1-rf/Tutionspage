@@ -1,32 +1,23 @@
-# FROM node:alpine
-# WORKDIR '/app'
+# Use an official Node.js runtime as a parent image
+FROM node:16
 
-# COPY package.json .
-# RUN npm install
-# COPY . .
-# CMD ["npm","start"];
+# Set the working directory in the container
+WORKDIR /app
 
-# Use the official Node.js image as the base image
-FROM node:alpine
-
-# Set the working directory
-WORKDIR /usr/src/app
-
-# Copy package.json and yarn.lock
-COPY package*.json ./
-# COPY yarn.lock ./
+# Copy package.json and package-lock.json
+COPY package.json package-lock.json ./
 
 # Install dependencies
-# RUN yarn install
+RUN npm install
 
 # Copy the rest of your application code
 COPY . .
 
-# Build the React application
-RUN install build
+# Build the application
+RUN npm run build
 
-# Expose the port the app runs on
+# Expose the port your app runs on
 EXPOSE 3000
 
-# Command to run the app
+# Command to run your application
 CMD ["npm", "start"]
