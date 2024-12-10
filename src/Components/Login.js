@@ -136,14 +136,14 @@ const Login = () => {
             {emailError && <p id="email-error" className="text-red-500 text-sm mt-1">{emailError}</p>}
           </div>
           <div className="mb-4 relative">
-            <label htmlFor="password" className="block  text-gray-700 text-left">Password</label>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 text-left">Password</label>
             <input
               type={showPassword ? 'text' : 'password'}
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm sm:text-sm ${passwordError ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 pr-10`}
+              className={`mt-1 block w-full px-3 py-2 sm:text-sm ${passwordError ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 pr-10`}
               aria-invalid={!!passwordError}
               aria-describedby="password-error"
               aria-label="Password"
