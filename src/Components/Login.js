@@ -136,7 +136,7 @@ const Login = () => {
             {emailError && <p id="email-error" className="text-red-500 text-sm mt-1">{emailError}</p>}
           </div>
           <div className="mb-4 relative">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 text-left">Password</label>
+            <label htmlFor="password" className="block  text-gray-700 text-left">Password</label>
             <input
               type={showPassword ? 'text' : 'password'}
               id="password"
