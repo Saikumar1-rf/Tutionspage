@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { FaEnvelope, FaBell, FaCog } from "react-icons/fa";
-import grad from '../assets/grad.jpg';
+
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { CgProfile } from "react-icons/cg";
@@ -116,13 +116,13 @@ const StudentDashboard = () => {
         )}
       </header>
 
-      <main className="p-4 text-gray-800 flex items-center justify-center">
+      {/* <main className="p-4 text-gray-800 flex items-center justify-center">
         <img
           src={grad}
           alt="Graduation Image"
           className="w-[840px] h-[150px] object-cover"
         />
-      </main>
+      </main> */}
 
       <div className="border border-black mt-3 flex flex-col h-screen m-[250px]">
         <header className="bg-cyan-700 text-white flex items-center justify-between px-2 py-2">

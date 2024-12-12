@@ -7,7 +7,7 @@ import ResetPassword from "./Components/ResetPassword";
 import Tutorpage from "./Components/Tutorpage";
 import React, { useState } from 'react'; 
 import "./App.css";
-import Saikumar from "./Components/Saikumar";
+
 import Createpassword from "./Components/Createpassword";
 import Studentuser from "./Components/Studentuser";
 import Homepage from "./Components/Homepage";
@@ -37,7 +37,6 @@ function App() {
         <Route path="/student" element={<Student />} />
         <Route path="/signuptutor" element={<SignUp isSubmitted={setIsSubmitted} />} />
         <Route path="/admin" element={<Tutorpage />} />
-        <Route path="/saikumar" element={<Saikumar/>} />
         <Route path="/studentuser" element={<Studentuser />} />
         <Route path="/createpassword" element={<Createpassword />} />
         <Route path="/homepage" element={<Homepage />} />
